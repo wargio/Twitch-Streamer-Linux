@@ -15,5 +15,4 @@ Dependencies:
 Screenshot:
 -----------
 
-![Screenshot from twitch.tv](https://raw.github.com/wargio/Twitch-Streamer-Linux/master/Screenshots/Screenshots.png
- "Screenshot from twitch.tv")
+![Screenshot from twitch.tv](https://raw.github.com/wargio/Twitch-Streamer-Linux/master/Screenshots/Screenshot.png)
