@@ -62,8 +62,8 @@ echo "Please setup the Audio Output (something like 'pavucontrol')"
 # if you see errors here, please report on github
 MODULE_LOAD1=$(pactl load-module module-null-sink sink_name=GameAudio) # For Game Audio
 MODULE_LOAD1=$(pactl load-module module-null-sink sink_name=MicAudio ) # For Mic Audio
-MODULE_LOAD3=$(pactl load-module module-loopback sink=GameAudio)       
-MODULE_LOAD4=$(pactl load-module module-loopback sink=MicAudio) 
+pactl load-module module-loopback sink=GameAudio       
+pactl load-module module-loopback sink=MicAudio
 echo " "
 
 # Checks if the webcam is loaded
@@ -78,6 +78,6 @@ echo " "
 echo "Stopping Audio (Don't worry if you see errors here)"
 pactl unload-module $MODULE_LOAD1
 pactl unload-module $MODULE_LOAD2
-pactl unload-module $MODULE_LOAD3
-pactl unload-module $MODULE_LOAD4
+pactl unload-module module-null-sink
+pactl unload-module module-loopback
 echo "Exit!"
