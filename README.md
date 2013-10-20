@@ -45,7 +45,7 @@ How to
 Dependencies:
 -------------
 
-        avconv pulseaudio alsa xwininfo pactl ffmpeg
+        avconv pulseaudio alsa xwininfo pactl ffmpeg libavcodec-extra-53
 
 ###Suggested:
 
