@@ -24,6 +24,7 @@ SERVER="live-fra"    # EU server
 # The following values are changed automatically, so do not change them
 TOPXY="0,0"          # Position of the Window (You don't need to change this)
 INRES="0x0"          # Game Resolution (You don't need to change this)
+CBR="400k"           # Constant bitrate (CBR) 
 
 # ================================================= CODE =======================================================
 # DO NOT CHANGE THE CODE!
@@ -31,13 +32,13 @@ INRES="0x0"          # Game Resolution (You don't need to change this)
 streamWebcam(){
         echo "Webcam found!!"
         echo "You should be online! Check on http://twitch.tv/ (Press CTRL+C to stop)"
-        avconv -f x11grab -s $INRES  -r "$FPS" -i :0.0+$TOPXY  -f alsa -ac 2 -i pulse -vcodec libx264 -s $OUTRES -preset $QUALITY -acodec libmp3lame -ar 44100 -threads $THREADS -qscale 3 -b 712000 -bufsize 512k -vf "movie=$WEBCAM:f=video4linux2, scale=$WEBCAM_WH , setpts=PTS-STARTPTS [WebCam]; [in] setpts=PTS-STARTPTS, [WebCam] overlay=main_w-overlay_w-10:10 [out]" -f flv "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
+        avconv -f x11grab -s $INRES  -r "$FPS" -i :0.0+$TOPXY  -f alsa -ac 2 -i pulse -vcodec libx264 -s $OUTRES -preset $QUALITY -acodec libmp3lame -ar 44100 -threads $THREADS -qscale 3 -b 712000 -bufsize 512k -vf "movie=$WEBCAM:f=video4linux2, scale=$WEBCAM_WH , setpts=PTS-STARTPTS [WebCam]; [in] setpts=PTS-STARTPTS, [WebCam] overlay=main_w-overlay_w-10:10 [out]" -force_key_frames 2 -b $CBR -minrate $CBR -maxrate $CBR -g 2 -keyint_min 2  -f flv "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
 }
 
 streamNoWebcam(){
         echo "Webcam NOT found!! ("$WEBCAM")"
         echo "You should be online! Check on http://twitch.tv/ (Press CTRL+C to stop)"
-        avconv -f x11grab -s $INRES -r "$FPS" -i :0.0+$TOPXY  -f alsa -ac 2 -i pulse -vcodec libx264 -s $OUTRES -preset $QUALITY -acodec libmp3lame -ar 44100 -threads $THREADS -qscale 3 -b 712000 -bufsize 512k -f flv "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
+        avconv -f x11grab -s $INRES -r "$FPS" -i :0.0+$TOPXY  -f alsa -ac 2 -i pulse -vcodec libx264 -s $OUTRES -preset $QUALITY -acodec libmp3lame -ar 44100 -threads $THREADS -qscale 3 -b 712000 -bufsize 512k -force_key_frames 2 -b $CBR -minrate $CBR -maxrate $CBR -g 2 -keyint_min 2 -f flv "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
 }
 
 

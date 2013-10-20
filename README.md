@@ -12,6 +12,8 @@ Tested on:
 * Bandwith: ~70 byte/s
 * Mem Used: ~192 MB (2 Threads)
 
+![Streaming Quality](https://raw.github.com/wargio/Twitch-Streamer-Linux/master/Screenshots/Streaming-Quality.png)
+
 How to
 ------
 
@@ -27,11 +29,14 @@ How to
         QUALITY    "medium" or "slow"       Streaming Quality (ultrafast, superfast, veryfast, faster, fast, medium, slow, slower, veryslow, placebo)
         WEBCAM     "/dev/video1"            WebCam chardevice under /dev
         WEBCAM_WH  "320:240"                WebCam Width end Height in the Output
-        STREAM_KEY live_xxxxxxxx_yyyyyy...  Your Twitch key (inside the script it takes the key from twitch_key file)
+        STREAM_KEY "live_xxxxxxxx_yyyyyy.." Your Twitch key (inside the script it takes the key from twitch_key file)
         SERVER     "live" or "live-fra"     Twitch Server list at http://bashtech.net/twitch/ingest.php
 
 * Open the game that you want to stream and set window mode.
-* Open a terminal and run the script ( **$ ./twitch.sh** ).
+* Open a terminal and run the script
+
+        $ ./twitch.sh
+
 * Click with your Mouse on the game window
 * Now you should be on streaming.
 * You can set the Audio settings (select the Null Output on pavucontrol)
