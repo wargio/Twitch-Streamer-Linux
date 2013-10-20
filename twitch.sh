@@ -13,7 +13,7 @@ QUALITY="medium"     # ultrafast, superfast, veryfast, faster, fast, medium, slo
 WEBCAM="/dev/video1" # WebCam device
 WEBCAM_WH="320:240"  # WebCam Width end Height
 
-# You can find YOUR key here: http://it.twitch.tv/broadcast (Show Key button)
+# You can find YOUR key here: http://www.twitch.tv/broadcast/ (Show Key button)
 # Save your key inside the twitch_key file
 STREAM_KEY=$(cat twitch_key)
 
