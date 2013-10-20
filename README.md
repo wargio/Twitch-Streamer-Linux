@@ -38,7 +38,7 @@ How to
         $ ./twitch.sh
 
 * Click with your Mouse on the game window
-* Now you should be on streaming.
+* Now you should be live (check on your channel).
 * You can set the Audio settings (select the Null Output on pavucontrol)
 * To stop the stream, click on the terminal and press CTRL+C
 
