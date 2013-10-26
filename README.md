@@ -14,6 +14,11 @@ Tested on:
 
 ![Streaming Quality](https://raw.github.com/wargio/Twitch-Streamer-Linux/master/Screenshots/Streaming-Quality.png)
 
+Authors:
+--------
+
+* Giovanni Dante Grazioli
+
 How to
 ------
 
