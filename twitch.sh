@@ -28,11 +28,12 @@ CBR="400k"           # Constant bitrate (CBR)
 
 # ================================================= CHECKS =====================================================
 # checks to avoid a false "true" where it checks for the webcam
-if [ -n "$WEBCAM" ]; then
-     WEBCAM="/dev/no-webcam"
+if [ -z "$WEBCAM" ]; then
+	echo "Your Webcam has been disabled because there isn't a WEBCAM in the options"
+	WEBCAM="/dev/no-webcam"
 else 
 # checks to avoid a fail on loading the Webcam
-	if [ -n "WEBCAM_WH" ]; then
+	if [ -z "$WEBCAM_WH" ]; then
 		echo "Your Webcam has been disabled because there isn't a WEBCAM_WH in the options"
 		WEBCAM="/dev/no-webcam"
 	fi
@@ -40,22 +41,22 @@ fi
 
 
 # checks to avoid fails
-if [ -n "$SERVER" ]; then
+if [ -z "$SERVER" ]; then
      SERVER="live"
 fi
-if [ -n "$OUTRES" ]; then
+if [ -z "$OUTRES" ]; then
      OUTRES="1280x720"
 fi
-if [ -n "$FPS" ]; then
+if [ -z "$FPS" ]; then
      FPS="30"
 fi
-if [ -n "$THREADS" ]; then
+if [ -z "$THREADS" ]; then
      THREADS="4"
 fi
-if [ -n "$QUALITY" ]; then
+if [ -z "$QUALITY" ]; then
      QUALITY="fast"
 fi
-if [ -n "$CBR" ]; then
+if [ -z "$CBR" ]; then
      CBR="400k"
 fi
 # ================================================= CODE =======================================================
