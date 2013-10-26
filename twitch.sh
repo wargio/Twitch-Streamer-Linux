@@ -26,6 +26,38 @@ TOPXY="0,0"          # Position of the Window (You don't need to change this)
 INRES="0x0"          # Game Resolution (You don't need to change this)
 CBR="400k"           # Constant bitrate (CBR) 
 
+# ================================================= CHECKS =====================================================
+# checks to avoid a false "true" where it checks for the webcam
+if [ -n "$WEBCAM" ]; then
+     WEBCAM="/dev/no-webcam"
+else 
+# checks to avoid a fail on loading the Webcam
+	if [ -n "WEBCAM_WH" ]; then
+		echo "Your Webcam has been disabled because there isn't a WEBCAM_WH in the options"
+		WEBCAM="/dev/no-webcam"
+	fi
+fi
+
+
+# checks to avoid fails
+if [ -n "$SERVER" ]; then
+     SERVER="live"
+fi
+if [ -n "$OUTRES" ]; then
+     OUTRES="1280x720"
+fi
+if [ -n "$FPS" ]; then
+     FPS="30"
+fi
+if [ -n "$THREADS" ]; then
+     THREADS="4"
+fi
+if [ -n "$QUALITY" ]; then
+     QUALITY="fast"
+fi
+if [ -n "$CBR" ]; then
+     CBR="400k"
+fi
 # ================================================= CODE =======================================================
 # DO NOT CHANGE THE CODE!
 
@@ -43,9 +75,7 @@ streamNoWebcam(){
 
 
 echo "Twitch Streamer for Linux"
-echo " "
 echo "Copyright (c) 2013, Giovanni Dante Grazioli (deroad)"
-echo " "
 echo " "
 
 # Get Game Window
@@ -81,3 +111,4 @@ pactl unload-module $MODULE_LOAD2
 pactl unload-module module-null-sink
 pactl unload-module module-loopback
 echo "Exit!"
+
