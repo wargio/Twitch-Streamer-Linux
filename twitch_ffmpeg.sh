@@ -5,19 +5,19 @@
 # ================================================ OPTIONS =====================================================
 # Streaming Options
 OUTRES="1280x720"    # Twitch Output Resolution
-FPS="30"             # Frame per Seconds (Suggested 24, 25, 30 or 60)
+FPS="24"             # Frame per Seconds (Suggested 24, 25, 30 or 60)
 THREADS="4"          # Change this if you have a good CPU (Suggested 4 threads, Max 6 threads)
-QUALITY="medium"     # ultrafast, superfast, veryfast, faster, fast, medium, slow, slower, veryslow, placebo
+QUALITY="veryfast"     # ultrafast, superfast, veryfast, faster, fast, medium, slow, slower, veryslow, placebo
 CRF_VAL="23"	     # Is the quality of the encoding. 0 (lossless) and 51 (bad quality). 23 is medium quality
 CBR="400k"           # Constant bitrate (CBR) Increase this to get a better pixel quality (500k ok 1000k very good)
 
 # Webcam Options
-WEBCAM="/dev/video1" # WebCam device
+WEBCAM="/dev/video0" # WebCam device
 WEBCAM_WH="320:240"  # WebCam Width end Height
 
 # You can find YOUR key here: http://www.twitch.tv/broadcast/ (Show Key button)
 # Save your key inside the twitch_key file
-STREAM_KEY=$(cat twitch_key)
+STREAM_KEY=$(cat ./twitch_key)
 
 # Twitch Server list http://bashtech.net/twitch/ingest.php
 SERVER="live-fra"    # EU server
@@ -75,13 +75,13 @@ fi
 streamWebcam(){
         echo "Webcam found!!"
         echo "You should be online! Check on http://twitch.tv/ (Press CTRL+C to stop)"
-        avconv -f x11grab -s $INRES  -r "$FPS" -i :0.0+$TOPXY  -f alsa -ac 2 -i pulse -vcodec libx264 -s $OUTRES -b $CBR -minrate $CBR -maxrate $CBR -preset $QUALITY -tune film -crf $CRF_VAL -qscale:v 1 -threads:v $THREADS -acodec libmp3lame -ar 44100 -threads $THREADS -qscale:a 1 -bufsize 512k -vf "movie=$WEBCAM:f=video4linux2, scale=$WEBCAM_WH , setpts=PTS-STARTPTS [WebCam]; [in] setpts=PTS-STARTPTS, [WebCam] overlay=main_w-overlay_w-10:10 [out]" -force_key_frames 2 -b $CBR -minrate $CBR -maxrate $CBR -g 2 -keyint_min 2  -f flv "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
+        ffmpeg -bufsize 512k -f x11grab -s $INRES -r "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -g 2 -keyint_min 2 -ac 2 -ar 44100 -vcodec libx264 -pix_fmt yuv420p -s $OUTRES -b $CBR -minrate $CBR -maxrate $CBR -preset $QUALITY -tune film -crf $CRF_VAL -acodec libmp3lame -threads $THREADS -vf "movie=$WEBCAM:f=video4linux2, scale=$WEBCAM_WH , setpts=PTS-STARTPTS [WebCam]; [in] setpts=PTS-STARTPTS, [WebCam] overlay=main_w-overlay_w-10:10 [out]" "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
 }
 
 streamNoWebcam(){
         echo "Webcam NOT found!! ("$WEBCAM")"
         echo "You should be online! Check on http://twitch.tv/ (Press CTRL+C to stop)"
-        avconv -f x11grab -s $INRES -r "$FPS" -i :0.0+$TOPXY  -f alsa -ac 2 -i pulse -vcodec libx264 -s $OUTRES -b $CBR -minrate $CBR -maxrate $CBR -preset $QUALITY -tune film -crf $CRF_VAL -qscale:v 1 -threads:v $THREADS -acodec libmp3lame -ar 44100 -threads $THREADS -qscale:a 1 -bufsize 512k -force_key_frames 2 -b $CBR -minrate $CBR -maxrate $CBR -g 2 -keyint_min 2 -f flv "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
+        ffmpeg -bufsize 512k -f x11grab -s $INRES -r "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -g 2 -keyint_min 2 -ac 2 -ar 44100 -vcodec libx264 -pix_fmt yuv420p -s $OUTRES -b $CBR -minrate $CBR -maxrate $CBR -preset $QUALITY -tune film -crf $CRF_VAL -acodec libmp3lame -threads $THREADS "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
 }
 
 
@@ -99,7 +99,7 @@ rm -f twitch_tmp 2> /dev/null
 echo " "
 
 # Setup
-echo "Please setup the Audio Output (something like 'pavucontrol')"
+echo "Please setup the Audio Output to sink null (something like 'pavucontrol')"
 # if you see errors here, please report on github
 MODULE_LOAD1=$(pactl load-module module-null-sink sink_name=GameAudio) # For Game Audio
 MODULE_LOAD2=$(pactl load-module module-null-sink sink_name=MicAudio ) # For Mic Audio

@@ -29,25 +29,31 @@ How to
         Value      Example                  Description                       
         ---------- ------------------------ ---------------------------------------------------------------------------------------------------------
         OUTRES     "1280x720"               Twitch Output Resolution ("1920x1080" should be the maximum resolution)
-        FPS        "60"                     Frame per Seconds (Suggested 30 or 60)
-        THREADS    "2"                      Change this if you have a good CPU (Suggested 4 threads, Max 6 threads)
-        QUALITY    "medium" or "slow"       Streaming Quality (ultrafast, superfast, veryfast, faster, fast, medium, slow, slower, veryslow, placebo)
-        CRF_VAL    "23"                      Is the quality setting. 0 (lossless) and 51 (bad quality). Start testing with 23, then change, if needed
+        FPS        "24"                     Frame per Seconds (Suggested 24, 25, 30 or 60)
+        THREADS    "4"                      Change this if you have a good CPU (Suggested 4 threads, Max 6 threads)
+        QUALITY    "medium" or "veryfast"   Streaming Quality (ultrafast, superfast, veryfast, faster, fast, medium, slow, slower, veryslow, placebo)
+        CRF_VAL    "23"                     Is the quality setting. 0 (lossless) and 51 (bad quality). Start testing with 23, then change, if needed
         WEBCAM     "/dev/video1"            WebCam chardevice under /dev
         WEBCAM_WH  "320:240"                WebCam Width end Height in the Output
         STREAM_KEY "live_xxxxxxxx_yyyyyy.." Your Twitch key (inside the script it takes the key from twitch_key file)
         SERVER     "live" or "live-fra"     Twitch Server list at http://bashtech.net/twitch/ingest.php
+        CBR        "500k" or "1000k"        Constant bitrate (CBR) Increase this to get a better pixel quality
 
 * Open the game that you want to stream and set window mode.
-* Open a terminal and run the script
+* Open a terminal, browse to the twitch script directory and run the script
 
-        $ ./twitch.sh
+        $ ./twitch.sh 
+
+* If the avconv script gives you an error, use FFMPEG version. works exactly the same.
+
+        $ ./twitch_ffmpeg.sh 
 
 * Click with your Mouse on the game window
 * Now you should be live (check on your channel).
 * You can set the Audio settings (select the Null Output on pavucontrol)
 * To stop the stream, click on the terminal and press CTRL+C
 * For suggestion or bugfix, please write to me on github. (I love suggestions! <3 )
+* Please do NOT write for support on my BLOG. post bug reports on http://github.com/wargio/Twitch-Streamer-Linux !
 
 Dependencies:
 -------------
