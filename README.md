@@ -52,6 +52,7 @@ How to
 * Now you should be live (check on your channel).
 * You can set the Audio settings (select the Null Output on pavucontrol)
 * To stop the stream, click on the terminal and press CTRL+C
+* **BE CAREFUL ON SHOWING THE TERMINAL SINCE AVCONV/FFMPEG PRINTS ON THE TERMINAL THE KEY**
 * For suggestion or bugfix, please write to me on github. (I love suggestions! <3 )
 * Please do NOT write for support on my BLOG. post bug reports on http://github.com/wargio/Twitch-Streamer-Linux !
 
@@ -81,3 +82,5 @@ Screenshot:
 -----------
 
 ![Screenshot from twitch.tv](https://raw.github.com/wargio/Twitch-Streamer-Linux/master/Screenshots/Screenshot.png)
+
+
