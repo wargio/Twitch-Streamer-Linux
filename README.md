@@ -65,7 +65,7 @@ Setup Audio (with pavucontrol):
 ![Screenshot from pavucontrol](https://raw.github.com/wargio/Twitch-Streamer-Linux/master/Screenshots/Twitch_Audio00.png)
 * Under `Recording`:
 ![Screenshot from pavucontrol](https://raw.github.com/wargio/Twitch-Streamer-Linux/master/Screenshots/Twitch_Audio01.png)
-* Done (For `ffmpeg` setting,  `Monitor of MicAudio` or `Monitor of GameAudio`. it's the same).
+* Done (For `ffmpeg/avconv` setting,  `Monitor of MicAudio` or `Monitor of GameAudio`. it's the same).
 * If you don't see any `Monitor of MicAudio` or `Monitor of GameAudio`, but only `Monitor of null output`, use it, don't worry.
 
 Dependencies:
