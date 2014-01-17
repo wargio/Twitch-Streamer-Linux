@@ -75,13 +75,13 @@ fi
 streamWebcam(){
         echo "Webcam found!!"
         echo "You should be online! Check on http://twitch.tv/ (Press CTRL+C to stop)"
-        ffmpeg -bufsize 512k -f x11grab -s $INRES -r "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -g 2 -keyint_min 2 -ac 2 -ar 44100 -vcodec libx264 -pix_fmt yuv420p -s $OUTRES -b $CBR -minrate $CBR -maxrate $CBR -preset $QUALITY -tune film -crf $CRF_VAL -acodec libmp3lame -threads $THREADS -vf "movie=$WEBCAM:f=video4linux2, scale=$WEBCAM_WH , setpts=PTS-STARTPTS [WebCam]; [in] setpts=PTS-STARTPTS, [WebCam] overlay=main_w-overlay_w-10:10 [out]" -strict normal "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
+        ffmpeg -f x11grab -s $INRES -r "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -g 2 -keyint_min 2 -ac 2 -ar 44100 -vcodec libx264 -pix_fmt yuv420p -s $OUTRES -b $CBR -minrate $CBR -maxrate $CBR -preset $QUALITY -tune film -crf $CRF_VAL -acodec libmp3lame -threads $THREADS -vf "movie=$WEBCAM:f=video4linux2, scale=$WEBCAM_WH , setpts=PTS-STARTPTS [WebCam]; [in] setpts=PTS-STARTPTS, [WebCam] overlay=main_w-overlay_w-10:10 [out]" -strict normal -bufsize 512k  "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
 }
 
 streamNoWebcam(){
         echo "Webcam NOT found!! ("$WEBCAM")"
         echo "You should be online! Check on http://twitch.tv/ (Press CTRL+C to stop)"
-        ffmpeg -bufsize 512k -f x11grab -s $INRES -r "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -g 2 -keyint_min 2 -ac 2 -ar 44100 -vcodec libx264 -pix_fmt yuv420p -s $OUTRES -b $CBR -minrate $CBR -maxrate $CBR -preset $QUALITY -tune film -crf $CRF_VAL -acodec libmp3lame -threads $THREADS -strict normal "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
+        ffmpeg -f x11grab -s $INRES -r "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -g 2 -keyint_min 2 -ac 2 -ar 44100 -vcodec libx264 -pix_fmt yuv420p -s $OUTRES -b $CBR -minrate $CBR -maxrate $CBR -preset $QUALITY -tune film -crf $CRF_VAL -acodec libmp3lame -threads $THREADS -strict normal -bufsize 512k "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
 }
 
 
