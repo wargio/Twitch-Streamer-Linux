@@ -9,7 +9,7 @@ FPS="30"             # Frame per Seconds (Suggested 24, 25, 30 or 60)
 THREADS="4"          # Change this if you have a good CPU (Suggested 4 threads, Max 6 threads)
 QUALITY="medium"     # ultrafast, superfast, veryfast, faster, fast, medium, slow, slower, veryslow, placebo
 CRF_VAL="23"	     # Is the quality of the encoding. 0 (lossless) and 51 (bad quality). 23 is medium quality
-CBR="400k"           # Constant bitrate (CBR) Increase this to get a better pixel quality (500k ok 1000k very good)
+CBR="1000k"          # Constant bitrate (CBR) Increase this to get a better pixel quality (1000k - 2000k for twitch)
 
 # Webcam Options
 WEBCAM="/dev/video1" # WebCam device
@@ -17,7 +17,7 @@ WEBCAM_WH="320:240"  # WebCam Width end Height
 
 # You can find YOUR key here: http://www.twitch.tv/broadcast/ (Show Key button)
 # Save your key inside the twitch_key file
-STREAM_KEY=$(cat twitch_key)
+STREAM_KEY=$(cat ./twitch_key)
 
 # Twitch Server list http://bashtech.net/twitch/ingest.php
 SERVER="live-fra"    # EU server
@@ -58,7 +58,7 @@ if [ -z "$QUALITY" ]; then
      QUALITY="fast"
 fi
 if [ -z "$CBR" ]; then
-     CBR="400k"
+     CBR="1000k"
 fi
 if [ -z "$CRF_VAL" ]; then
      CRF_VAL="23"
