@@ -81,7 +81,7 @@ streamWebcam(){
 streamNoWebcam(){
         echo "Webcam NOT found!! ("$WEBCAM")"
         echo "You should be online! Check on http://twitch.tv/ (Press CTRL+C to stop)"
-        avconv -f x11grab -s $INRES -r "$FPS" -i :0.0+$TOPXY  -f alsa -ac 2 -i pulse -vcodec libx264 -g 2 -keyint_min 2 -b $CBR -minrate $CBR -maxrate $CBR -s $OUTRES --preset $QUALITY -tune film -crf $CRF_VAL -qscale:v 1 -threads:v $THREADS -acodec libmp3lame -ar 44100 -threads $THREADS -qscale:a 1 -bufsize 512k -f flv "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
+        avconv -f x11grab -s $INRES -r "$FPS" -i :0.0+$TOPXY  -f alsa -ac 2 -i pulse -vcodec libx264 -g 2 -keyint_min 2 -b $CBR -minrate $CBR -maxrate $CBR -s $OUTRES -preset $QUALITY -tune film -crf $CRF_VAL -qscale:v 1 -threads:v $THREADS -acodec libmp3lame -ar 44100 -threads $THREADS -qscale:a 1 -bufsize 512k -f flv "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
 }
 
 
