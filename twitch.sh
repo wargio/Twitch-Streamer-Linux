@@ -8,7 +8,6 @@ OUTRES="1280x720"    # Twitch Output Resolution
 FPS="30"             # Frame per Seconds (Suggested 24, 25, 30 or 60)
 THREADS="4"          # Change this if you have a good CPU (Suggested 4 threads, Max 6 threads)
 QUALITY="medium"     # ultrafast, superfast, veryfast, faster, fast, medium, slow, slower, veryslow, placebo
-CRF_VAL="23"	     # Is the quality of the encoding. 0 (lossless) and 51 (bad quality). 23 is medium quality
 CBR="1000k"          # Constant bitrate (CBR) Increase this to get a better pixel quality (1000k - 2000k for twitch)
 
 # Webcam Options
@@ -75,13 +74,13 @@ fi
 streamWebcam(){
         echo "Webcam found!!"
         echo "You should be online! Check on http://twitch.tv/ (Press CTRL+C to stop)"
-        avconv -f x11grab -s $INRES  -r "$FPS" -i :0.0+$TOPXY  -f alsa -ac 2 -i pulse -vcodec libx264 -g 2 -keyint_min 2 -b $CBR -minrate $CBR -maxrate $CBR -s $OUTRES -preset $QUALITY -tune film -crf $CRF_VAL -qscale:v 1 -threads:v $THREADS -acodec libmp3lame -ar 44100 -threads $THREADS -qscale:a 1 -bufsize 512k -vf "movie=$WEBCAM:f=video4linux2, scale=$WEBCAM_WH , setpts=PTS-STARTPTS [WebCam]; [in] setpts=PTS-STARTPTS, [WebCam] overlay=main_w-overlay_w-10:10 [out]" -f flv "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
+        avconv -f x11grab -s $INRES  -r "$FPS" -i :0.0+$TOPXY  -f alsa -ac 2 -i pulse -vcodec libx264 -g $GOP -keyint_min $GOPMIN -b $CBR -minrate $CBR -maxrate $CBR -s $OUTRES -preset $QUALITY -tune film -qscale:v 1 -threads:v $THREADS -acodec libmp3lame -ar 44100 -threads $THREADS -qscale:a 1 -bufsize $CBR -vf "movie=$WEBCAM:f=video4linux2, scale=$WEBCAM_WH , setpts=PTS-STARTPTS [WebCam]; [in] setpts=PTS-STARTPTS, [WebCam] overlay=main_w-overlay_w-10:10 [out]" -f flv "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
 }
 
 streamNoWebcam(){
         echo "Webcam NOT found!! ("$WEBCAM")"
         echo "You should be online! Check on http://twitch.tv/ (Press CTRL+C to stop)"
-        avconv -f x11grab -s $INRES -r "$FPS" -i :0.0+$TOPXY  -f alsa -ac 2 -i pulse -vcodec libx264 -g 2 -keyint_min 2 -b $CBR -minrate $CBR -maxrate $CBR -s $OUTRES -preset $QUALITY -tune film -crf $CRF_VAL -qscale:v 1 -threads:v $THREADS -acodec libmp3lame -ar 44100 -threads $THREADS -qscale:a 1 -bufsize 512k -f flv "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
+        avconv -f x11grab -s $INRES -r "$FPS" -i :0.0+$TOPXY  -f alsa -ac 2 -i pulse -vcodec libx264 -g $GOP -keyint_min $GOPMIN -b $CBR -minrate $CBR -maxrate $CBR -s $OUTRES -preset $QUALITY -tune film -qscale:v 1 -threads:v $THREADS -acodec libmp3lame -ar 44100 -threads $THREADS -qscale:a 1 -bufsize $CBR -f flv "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
 }
 
 
