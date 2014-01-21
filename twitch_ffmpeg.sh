@@ -49,6 +49,11 @@ if [ -z "$OUTRES" ]; then
 fi
 if [ -z "$FPS" ]; then
      FPS="30"
+     GOP="60"
+     GOPMIN="30"
+elif
+     GOP=$(($FPS*2))
+     GOPMIN=$FPS
 fi
 if [ -z "$THREADS" ]; then
      THREADS="4"
@@ -58,9 +63,6 @@ if [ -z "$QUALITY" ]; then
 fi
 if [ -z "$CBR" ]; then
      CBR="1000k"
-fi
-if [ -z "$CRF_VAL" ]; then
-     CRF_VAL="23"
 fi
 if [ -z "$STREAM_KEY" ]; then
      echo "STREAM_KEY not set or there is a problem with it... Aborting."
