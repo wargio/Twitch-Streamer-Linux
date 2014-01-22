@@ -51,7 +51,7 @@ if [ -z "$FPS" ]; then
      FPS="30"
      GOP="60"
      GOPMIN="30"
-elif
+else
      GOP=$(($FPS*2))
      GOPMIN=$FPS
 fi
