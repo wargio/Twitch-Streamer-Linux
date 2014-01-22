@@ -19,6 +19,10 @@ Authors:
 
 * Giovanni Dante Grazioli
 
+###Contributor
+
+* İlteriş Eroğlu
+
 How to
 ------
 
