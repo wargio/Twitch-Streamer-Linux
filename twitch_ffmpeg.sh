@@ -5,9 +5,9 @@
 # ================================================ OPTIONS =====================================================
 # Streaming Options
 OUTRES="1280x720"    # Twitch Output Resolution
-FPS="5"             # Frame per Seconds (Suggested 24, 25, 30 or 60)
+FPS="30"             # Frame per Seconds (Suggested 24, 25, 30 or 60)
 THREADS="4"          # Change this if you have a good CPU (Suggested 4 threads, Max 6 threads)
-QUALITY="superfast"     # ultrafast, superfast, veryfast, faster, fast, medium, slow, slower, veryslow, placebo
+QUALITY="medium"     # ultrafast, superfast, veryfast, faster, fast, medium, slow, slower, veryslow, placebo
 CBR="1000k"          # Constant bitrate (CBR) Increase this to get a better pixel quality (1000k - 2000k for twitch)
 
 # Webcam Options
