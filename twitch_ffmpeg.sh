@@ -14,9 +14,10 @@ CBR="1000k"          # Constant bitrate (CBR) Increase this to get a better pixe
 WEBCAM="/dev/video1" # WebCam device
 WEBCAM_WH="320:240"  # WebCam Width end Height
 
+# STREAM KEY
 # You can find YOUR key here: http://www.twitch.tv/broadcast/ (Show Key button)
 # Save your key inside the twitch_key file
-STREAM_KEY=$(cat ./twitch_key)
+# Or make a global file named ".twitch_key" in your home directory (~/.twitch_key)
 
 # Twitch Server list http://bashtech.net/twitch/ingest.php
 SERVER="live-fra"    # EU server
@@ -25,6 +26,8 @@ SERVER="live-fra"    # EU server
 # The following values are changed automatically, so do not change them
 TOPXY="0,0"          # Position of the Window (You don't need to change this)
 INRES="0x0"          # Game Resolution (You don't need to change this)
+STREAM_KEY=""
+FULLSCREEN=false
 
 # ================================================= CHECKS =====================================================
 # checks to avoid a false "true" where it checks for the webcam
@@ -39,6 +42,16 @@ else
 	fi
 fi
 
+# Find stream key
+if [ -f ./twitch_key ]; then
+    echo "Using twitch key located in current running directory"
+    STREAM_KEY=$(cat ./twitch_key)
+else
+    if [ -f ~/.twitch_key ]; then
+        echo "Using global twitch key located in home directory"
+        STREAM_KEY=$(cat ~/.twitch_key)
+    fi
+fi
 
 # checks to avoid fails
 if [ -z "$SERVER" ]; then
@@ -70,6 +83,11 @@ if [ -z "$STREAM_KEY" ]; then
      exit 1
 fi
 
+read -p "Do you wish to go fullscreen (alternative is select single window) [yY]? " yn
+if [[ $yn == [yY] ]];  then
+    FULLSCREEN=true;
+fi
+
 # ================================================= CODE =======================================================
 # DO NOT CHANGE THE CODE!
 
@@ -91,13 +109,17 @@ echo "Copyright (c) 2013, Giovanni Dante Grazioli (deroad)"
 echo " "
 
 # Get Game Window
-echo "Click, with the mouse, on the Window that you want to Stream"
-rm -f twitch_tmp 2> /dev/null
-xwininfo -stats >> twitch_tmp
-TOPXY=$(cat twitch_tmp | awk 'FNR == 8 {print $4}')","$(cat twitch_tmp | awk 'FNR == 9 {print $4}')
-INRES=$(cat twitch_tmp | awk 'FNR == 12 {print $2}')"x"$(cat twitch_tmp | awk 'FNR == 13 {print $2}')
-rm -f twitch_tmp 2> /dev/null
-echo " "
+if [ $FULLSCREEN = true ]; then
+    INRES=$(xwininfo -root | awk '/geometry/ {print $2}'i | sed -e 's/\+[0-9]//g')
+else
+    echo "Click, with the mouse, on the Window that you want to Stream"
+    rm -f twitch_tmp 2> /dev/null
+    xwininfo -stats >> twitch_tmp
+    TOPXY=$(cat twitch_tmp | awk 'FNR == 8 {print $4}')","$(cat twitch_tmp | awk 'FNR == 9 {print $4}')
+    INRES=$(cat twitch_tmp | awk 'FNR == 12 {print $2}')"x"$(cat twitch_tmp | awk 'FNR == 13 {print $2}')
+    rm -f twitch_tmp 2> /dev/null
+    echo " "
+fi
 
 # Setup
 echo "Please setup the Audio Output to sink null (something like 'pavucontrol')"
