@@ -5,14 +5,16 @@
 # ================================================ OPTIONS =====================================================
 # Streaming Options
 OUTRES="1280x720"    # Twitch Output Resolution
-FPS="30"             # Frame per Seconds (Suggested 24, 25, 30 or 60)
+FPS="5"             # Frame per Seconds (Suggested 24, 25, 30 or 60)
 THREADS="4"          # Change this if you have a good CPU (Suggested 4 threads, Max 6 threads)
-QUALITY="medium"     # ultrafast, superfast, veryfast, faster, fast, medium, slow, slower, veryslow, placebo
+QUALITY="superfast"     # ultrafast, superfast, veryfast, faster, fast, medium, slow, slower, veryslow, placebo
 CBR="1000k"          # Constant bitrate (CBR) Increase this to get a better pixel quality (1000k - 2000k for twitch)
 
 # Webcam Options
 WEBCAM="/dev/video1" # WebCam device
 WEBCAM_WH="320:240"  # WebCam Width end Height
+
+AUDIO_RATE="44100"
 
 # STREAM KEY
 # You can find YOUR key here: http://www.twitch.tv/broadcast/ (Show Key button)
@@ -28,6 +30,7 @@ TOPXY="0,0"          # Position of the Window (You don't need to change this)
 INRES="0x0"          # Game Resolution (You don't need to change this)
 STREAM_KEY=""
 FULLSCREEN=false
+LOGLEVEL_ARG=""
 
 # ================================================= CHECKS =====================================================
 # checks to avoid a false "true" where it checks for the webcam
@@ -83,24 +86,19 @@ if [ -z "$STREAM_KEY" ]; then
      exit 1
 fi
 
-read -p "Do you wish to go fullscreen (alternative is select single window) [yY]? " yn
-if [[ $yn == [yY] ]];  then
-    FULLSCREEN=true;
-fi
-
 # ================================================= CODE =======================================================
 # DO NOT CHANGE THE CODE!
 
 streamWebcam(){
         echo "Webcam found!!"
         echo "You should be online! Check on http://twitch.tv/ (Press CTRL+C to stop)"
-        ffmpeg -f x11grab -s $INRES -r "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar 44100 -vcodec libx264 -g $GOP -keyint_min $GOPMIN -b $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film  -acodec libmp3lame -threads $THREADS -vf "movie=$WEBCAM:f=video4linux2, scale=$WEBCAM_WH , setpts=PTS-STARTPTS [WebCam]; [in] setpts=PTS-STARTPTS, [WebCam] overlay=main_w-overlay_w-10:10 [out]" -strict normal -bufsize $CBR  "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
+        ffmpeg -f x11grab -s $INRES -r "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -g $GOP -keyint_min $GOPMIN -b $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film  -acodec libmp3lame -threads $THREADS -vf "movie=$WEBCAM:f=video4linux2, scale=$WEBCAM_WH , setpts=PTS-STARTPTS [WebCam]; [in] setpts=PTS-STARTPTS, [WebCam] overlay=main_w-overlay_w-10:10 [out]" -strict normal -bufsize $CBR $LOGLEVEL_ARG "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
 }
 
 streamNoWebcam(){
         echo "Webcam NOT found!! ("$WEBCAM")"
         echo "You should be online! Check on http://twitch.tv/ (Press CTRL+C to stop)"
-        ffmpeg -f x11grab -s $INRES -r "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar 44100 -vcodec libx264 -g $GOP -keyint_min $GOPMIN -b $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film -acodec libmp3lame -threads $THREADS -strict normal -bufsize $CBR "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
+        ffmpeg -f x11grab -s $INRES -r "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -g $GOP -keyint_min $GOPMIN -b $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film -acodec libmp3lame -threads $THREADS -strict normal -bufsize $CBR $LOGLEVEL_ARG "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
 }
 
 
@@ -109,17 +107,31 @@ echo "Copyright (c) 2013, Giovanni Dante Grazioli (deroad)"
 echo " "
 
 # Get Game Window
-if [ $FULLSCREEN = true ]; then
-    INRES=$(xwininfo -root | awk '/geometry/ {print $2}'i | sed -e 's/\+[0-9]//g')
-else
-    echo "Click, with the mouse, on the Window that you want to Stream"
-    rm -f twitch_tmp 2> /dev/null
-    xwininfo -stats >> twitch_tmp
-    TOPXY=$(cat twitch_tmp | awk 'FNR == 8 {print $4}')","$(cat twitch_tmp | awk 'FNR == 9 {print $4}')
-    INRES=$(cat twitch_tmp | awk 'FNR == 12 {print $2}')"x"$(cat twitch_tmp | awk 'FNR == 13 {print $2}')
-    rm -f twitch_tmp 2> /dev/null
-    echo " "
-fi
+echo "1: Go fullscreen!"
+echo "2: Enter dimensions!"
+echo "3: Select window!"
+read -p ">> " selection
+case $selection in
+    [1] )
+        FULLSCREEN=true
+        INRES=$(xwininfo -root | awk '/geometry/ {print $2}'i | sed -e 's/\+[0-9]//g')
+        echo "It is recommended that you suppress ffmpeg output while in fullscreen mode, otherwise people watching your stream will see your twitch key (DO NOT WANT THIS)."
+        read -p "Would wou like to suppress output [yY]? " suppYN
+        if [[ $suppYN == [yY] ]]; then
+            LOGLEVEL_ARG="-loglevel 0"
+        fi ;;
+    [2] )
+        read -p "Please enter size in the format 'widthxheight': " INRES
+        read -p "Please enter the offset in the format 'TOP_X,TOP_Y': " TOPXY;;
+    [3] )
+        echo "Click, with the mouse, on the Window that you want to Stream"
+        rm -f twitch_tmp 2> /dev/null
+        xwininfo -stats >> twitch_tmp
+        TOPXY=$(cat twitch_tmp | awk 'FNR == 8 {print $4}')","$(cat twitch_tmp | awk 'FNR == 9 {print $4}')
+        INRES=$(cat twitch_tmp | awk 'FNR == 12 {print $2}')"x"$(cat twitch_tmp | awk 'FNR == 13 {print $2}')
+        rm -f twitch_tmp 2> /dev/null
+        echo " ";;
+esac
 
 # Setup
 echo "Please setup the Audio Output to sink null (something like 'pavucontrol')"
@@ -132,6 +144,10 @@ pactl load-module module-loopback sink=MicAudio >> /dev/null
 echo " "
 
 # Checks if the webcam is loaded
+if [ "$LOGLEVEL_ARG" != "" ]; then
+    echo "    (Logging will be suppressed, no ffmpeg output!)"
+fi
+
 if [ -c $WEBCAM ]; then
      streamWebcam
 else
