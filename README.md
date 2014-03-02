@@ -19,33 +19,37 @@ Authors:
 
 * Giovanni Dante Grazioli
 
-###Contributor
+###Contributors
 
 * İlteriş Eroğlu
+* yofreke
 
 How to
 ------
 
-* Go to http://www.twitch.tv/broadcast/ , click on the **Show Key** button and copy and paste the key inside the twitch_key file
+* Go to http://www.twitch.tv/broadcast/ , click on the **Show Key** button and copy and paste the key inside the twitch_key file or inside the ~/.twitch_key
 * To save the Streaming, go to http://twitch.tv/settings/videos and check **Archive Broadcasts - Automatically archive my broadcasts**
 * Open now the twitch.sh and edit the settings
 
-        Value      Example                  Description                       
-        ---------- ------------------------ ---------------------------------------------------------------------------------------------------------
-        OUTRES     "1280x720"               Twitch Output Resolution ("1920x1080" should be the maximum resolution)
-        FPS        "24"                     Frame per Seconds (Suggested 24, 25, 30 or 60)
-        THREADS    "4"                      Change this if you have a good CPU (Suggested 4 threads, Max 6 threads)
-        QUALITY    "medium" or "veryfast"   Streaming Quality (ultrafast, superfast, veryfast, faster, fast, medium, slow, slower, veryslow, placebo)
-        WEBCAM     "/dev/video1"            WebCam chardevice under /dev
-        WEBCAM_WH  "320:240"                WebCam Width end Height in the Output
-        STREAM_KEY "live_xxxxxxxx_yyyyyy.." Your Twitch key (inside the script it takes the key from twitch_key file)
-        SERVER     "live" or "live-fra"     Twitch Server list at http://bashtech.net/twitch/ingest.php
-        CBR        "1000k" to "3000k"       Constant bitrate. Increase this to get a better pixel quality (Twitch suggest between 1000k to 3000k)
+        Value              Example                  Description                       
+        ------------------ ------------------------ ---------------------------------------------------------------------------------------------------------
+        OUTRES             "1280x720"               Twitch Output Resolution ("1920x1080" should be the maximum resolution)
+        FPS                "24"                     Frame per Seconds (Suggested 24, 25, 30 or 60)
+        THREADS            "4"                      Change this if you have a good CPU (Suggested 4 threads, Max 6 threads)
+        QUALITY            "medium" or "veryfast"   Streaming Quality (ultrafast, superfast, veryfast, faster, fast, medium, slow, slower, veryslow, placebo)
+        WEBCAM             "/dev/video1"            WebCam chardevice under /dev
+        WEBCAM_WH          "320:240"                WebCam Width end Height in the Output
+        SERVER             "live" or "live-fra"     Twitch Server list at http://bashtech.net/twitch/ingest.php
+        CBR                "1000k" to "3000k"       Constant bitrate. Increase this to get a better pixel quality (Twitch suggest between 1000k to 3000k)
+        ALWAYS_FULLSCREEN  "false" or "true"        Change this to 'true' if you want to go always on FULLSCREEN, this will disable the output.
+        SUPPRESS_OUTPUT    "false" or "true"        Change this to 'true' if you want to hide your STREAM_KEY, for security purpose. This will not affect 
+                                                    the ALWAYS_FULLSCREEN option. ALWAYS_FULLSCREEN will always disable the output.
+        AUDIO_RATE         "44100"                  Twitch Audio Rate. Twitch itself, says must be 2 channels with 44100 as rate; so DO NOT CHANGE IT!
 
 * Open the game that you want to stream and set window mode.
 * Open a terminal, browse to the twitch script directory and run the script
 
-        $ ./twitch.sh 
+        $ ./twitch_avconv.sh 
 
 * If the avconv script gives you an error, use FFMPEG version. works exactly the same.
 
@@ -59,10 +63,21 @@ How to
 * For suggestion or bugfix, please write to me on github. (I love suggestions! <3 )
 * Please do NOT write for support on my BLOG. post bug reports on http://github.com/wargio/Twitch-Streamer-Linux !
 
+Additional How to
+-----------------
+
+* You can run the scripts with some arguments:
+
+        Value              Description                       
+        ------------------ ---------------------------------------------------------------------------------------------------------
+         -h                Display the usage screen
+         -fullscreen       Run the script in FULLSCREEN mode 
+         -window           Run the script in WINDOW mode
+
 
 Setup Audio (with pavucontrol):
 -------------------------------
-* My microphone is `Turtle BEach PLa Headset` and my game is `Syobon Action (Cat Mario)`
+* My microphone is `Turtle Beach PLa Headset` and my game is `Syobon Action (Cat Mario)`
 * Open the game you want to stream and exec the script
 * Now open `pavucontrol`
 * Under `Playback`:
