@@ -69,7 +69,7 @@ Additional How to
 * You can run the scripts with some arguments:
 
         Value              Description                       
-        ------------------ ---------------------------------------------------------------------------------------------------------
+        ------------------ ----------------------------------------------------------------------------
          -h                Display the usage screen
          -fullscreen       Run the script in FULLSCREEN mode 
          -window           Run the script in WINDOW mode
