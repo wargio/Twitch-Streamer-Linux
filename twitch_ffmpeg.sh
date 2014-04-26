@@ -4,11 +4,11 @@
 
 # ================================================ OPTIONS =====================================================
 # Streaming Options
-OUTRES="1280x720"    # Twitch Output Resolution
-FPS="30"             # Frame per Seconds (Suggested 24, 25, 30 or 60)
-THREADS="4"          # Change this if you have a good CPU (Suggested 4 threads, Max 6 threads)
-QUALITY="ultrafast"     # ultrafast, superfast, veryfast, faster, fast, medium, slow, slower, veryslow, placebo
-CBR="1000k"          # Constant bitrate (CBR) Increase this to get a better pixel quality (1000k - 3000k for twitch)
+OUTRES="1280x720"     # Twitch Output Resolution
+FPS="24"              # Frame per Seconds (Suggested 24, 25, 30 or 60)
+THREADS="4"           # Change this if you have a good CPU (Suggested 4 threads, Max 6 threads)
+QUALITY="ultrafast"   # ultrafast, superfast, veryfast, faster, fast, medium, slow, slower, veryslow, placebo
+CBR="1000k"           # Constant bitrate (CBR) Increase this to get a better pixel quality (1000k - 3000k for twitch)
 
 # Webcam Options
 WEBCAM="/dev/video1" # WebCam device
@@ -55,15 +55,15 @@ else
 fi
 
 # Find stream key
-if [ -f ./twitch_key ]; then
-    ECHO_LOG=$ECHO_LOG"\nUsing twitch key located in current running directory"
-    STREAM_KEY=$(cat ./twitch_key)
+if [ -f ~/.twitch_key ]; then
+    ECHO_LOG=$ECHO_LOG"\nUsing global twitch key located in home directory"
+    STREAM_KEY=$(cat ~/.twitch_key)
 else
-    if [ -f ~/.twitch_key ]; then
-        ECHO_LOG=$ECHO_LOG"\nUsing global twitch key located in home directory"
-        STREAM_KEY=$(cat ~/.twitch_key)
+    if [ -f ./twitch_key ]; then
+        ECHO_LOG=$ECHO_LOG"\nUsing twitch key located in current running directory"
+        STREAM_KEY=$(cat ./twitch_key)
     else
-        echo "Could not locate .twitch_key or twitch_key"
+        echo "Could not locate ~/.twitch_key or twitch_key"
         exit 1
     fi
 fi
@@ -139,7 +139,7 @@ streamWebcam(){
         echo "Webcam found!!"
         echo "You should be online! Check on http://twitch.tv/ (Press CTRL+C to stop)"
         echo " "
-        ffmpeg -f x11grab -s $INRES -r "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -g $GOP -keyint_min $GOPMIN -b $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film  -acodec libmp3lame -threads $THREADS -vf "movie=$WEBCAM:f=video4linux2, scale=$WEBCAM_WH , setpts=PTS-STARTPTS [WebCam]; [in] setpts=PTS-STARTPTS, [WebCam] overlay=main_w-overlay_w-10:10 [out]" -strict normal -bufsize $CBR $LOGLEVEL_ARG "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
+        ffmpeg -f x11grab -s $INRES -framerate "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -g $GOP -keyint_min $GOPMIN -b $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film  -acodec libmp3lame -threads $THREADS -vf "movie=$WEBCAM:f=video4linux2, scale=$WEBCAM_WH , setpts=PTS-STARTPTS [WebCam]; [in] setpts=PTS-STARTPTS, [WebCam] overlay=main_w-overlay_w-10:10 [out]" -strict normal -bufsize $CBR $LOGLEVEL_ARG "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
         APP_RETURN=$?
 }
 
@@ -147,7 +147,7 @@ streamNoWebcam(){
         echo "Webcam NOT found!! ("$WEBCAM")"
         echo "You should be online! Check on http://twitch.tv/ (Press CTRL+C to stop)"
         echo " "
-        ffmpeg -f x11grab -s $INRES -r "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -g $GOP -keyint_min $GOPMIN -b $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film -acodec libmp3lame -threads $THREADS -strict normal -bufsize $CBR $LOGLEVEL_ARG "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
+        ffmpeg -f x11grab -s $INRES -framerate "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -g $GOP -keyint_min $GOPMIN  -b:v $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film -acodec libmp3lame -threads $THREADS -strict normal -bufsize $CBR $LOGLEVEL_ARG "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
         APP_RETURN=$?
 }
 
@@ -228,7 +228,6 @@ fi
 echo "Please setup the Audio Output to sink null (something like 'pavucontrol')"
 # if you see errors here, please report on github
 loadModule
-
 
 # Disable trap
 trap - SIGHUP SIGINT SIGTERM

@@ -89,12 +89,26 @@ Setup Audio (with pavucontrol):
 
 Dependencies:
 -------------
+These dependencies are not the name of the packages that you need. They are the name of the executables/libs that you need.
 
         avconv pulseaudio alsa xwininfo pactl ffmpeg libavcodec-extra-53
 
 ###Suggested:
 
         pavucontrol
+
+FAQ
+---
+* How do i choose the bitrate?
+
+	The optimal bitrate can be calculated in this way: `bitrate = Width*Height/144`, 
+	an example `720*480/144 = 2400 (k)` but if you get a bitrate above 5000(k)
+	like `1920*1080/144=2073456(k = ~2073 M)` choose 5000k, because 6000k is
+	DVD quality. 
+
+* I see some errors after `Stopping Audio (Don't worry if you see errors here)`, should i worry about this?
+
+	No, you don't. They are supposed to show up.
 
 Screenshot:
 -----------
