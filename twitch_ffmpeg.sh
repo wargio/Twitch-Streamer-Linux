@@ -76,13 +76,13 @@ fi
 streamWebcam(){
         echo "Webcam found!!"
         echo "You should be online! Check on http://twitch.tv/ (Press CTRL+C to stop)"
-        avconv -f x11grab -s $INRES  -r "$FPS" -i :0.0+$TOPXY  -f alsa -ac 2 -i pulse -vcodec libx264 -g $GOP -keyint_min $GOPMIN -b $CBR -minrate $CBR -maxrate $CBR -s $OUTRES -preset $QUALITY -tune film -qscale:v 1 -threads:v $THREADS -acodec libmp3lame -ar 44100 -threads $THREADS -qscale:a 1 -bufsize $CBR -vf "movie=$WEBCAM:f=video4linux2, scale=$WEBCAM_WH , setpts=PTS-STARTPTS [WebCam]; [in] setpts=PTS-STARTPTS, [WebCam] overlay=main_w-overlay_w-10:10 [out]" -f flv "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
+        ffmpeg -f x11grab -s $INRES -r "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar 44100 -vcodec libx264 -g $GOP -keyint_min $GOPMIN -b $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film  -acodec libmp3lame -threads $THREADS -vf "movie=$WEBCAM:f=video4linux2, scale=$WEBCAM_WH , setpts=PTS-STARTPTS [WebCam]; [in] setpts=PTS-STARTPTS, [WebCam] overlay=main_w-overlay_w-10:10 [out]" -strict normal -bufsize $CBR  "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
 }
 
 streamNoWebcam(){
         echo "Webcam NOT found!! ("$WEBCAM")"
         echo "You should be online! Check on http://twitch.tv/ (Press CTRL+C to stop)"
-        avconv -f x11grab -s $INRES -r "$FPS" -i :0.0+$TOPXY  -f alsa -ac 2 -i pulse -vcodec libx264 -g $GOP -keyint_min $GOPMIN -b $CBR -minrate $CBR -maxrate $CBR -s $OUTRES -preset $QUALITY -tune film -qscale:v 1 -threads:v $THREADS -acodec libmp3lame -ar 44100 -threads $THREADS -qscale:a 1 -bufsize $CBR -f flv "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
+        ffmpeg -f x11grab -s $INRES -r "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar 44100 -vcodec libx264 -g $GOP -keyint_min $GOPMIN -b $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film -acodec libmp3lame -threads $THREADS -strict normal -bufsize $CBR "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
 }
 
 
@@ -100,7 +100,7 @@ rm -f twitch_tmp 2> /dev/null
 echo " "
 
 # Setup
-echo "Please setup the Audio Output (something like 'pavucontrol')"
+echo "Please setup the Audio Output to sink null (something like 'pavucontrol')"
 # if you see errors here, please report on github
 MODULE_LOAD1=$(pactl load-module module-null-sink sink_name=GameAudio) # For Game Audio
 MODULE_LOAD2=$(pactl load-module module-null-sink sink_name=MicAudio ) # For Mic Audio
