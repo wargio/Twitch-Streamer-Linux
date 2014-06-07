@@ -39,6 +39,7 @@ How to
         QUALITY            "medium" or "veryfast"   Streaming Quality (ultrafast, superfast, veryfast, faster, fast, medium, slow, slower, veryslow, placebo)
         WEBCAM             "/dev/video1"            WebCam chardevice under /dev
         WEBCAM_WH          "320:240"                WebCam Width end Height in the Output
+        WEBCAM_XY=""       "10:10"                  WebCam Position if empty then it will set the standard position
         SERVER             "live" or "live-fra"     Twitch Server list at http://bashtech.net/twitch/ingest.php
         CBR                "1000k" to "3000k"       Constant bitrate. Increase this to get a better pixel quality (Twitch suggest between 1000k to 3000k)
         ALWAYS_FULLSCREEN  "false" or "true"        Change this to 'true' if you want to go always on FULLSCREEN, this will disable the output.
@@ -109,6 +110,12 @@ FAQ
 * I see some errors after `Stopping Audio (Don't worry if you see errors here)`, should i worry about this?
 
 	No, you don't. They are supposed to show up.
+
+* Which is the Webcam standard position on the screen?
+
+	The standard position is: (ScreenWidth - WebcamWidth - 10):10 (Upper Right corner)
+	Keep in mind that the coordinates start from 0:0 (Upper Left corner) to Width:Height (Bottom Right corner)
+
 
 Screenshot:
 -----------

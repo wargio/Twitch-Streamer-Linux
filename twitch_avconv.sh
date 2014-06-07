@@ -12,7 +12,8 @@ CBR="1000k"           # Constant bitrate (CBR) Increase this to get a better pix
 
 # Webcam Options
 WEBCAM="/dev/video1" # WebCam device
-WEBCAM_WH="320:240"  # WebCam Width end Height
+WEBCAM_WH="320:240"  # WebCam Width end Height (in pixel)
+WEBCAM_XY=""         # WebCam Position (in pixel) example: "10:10", if "" (empty) then it will set the standard position
 
 # STREAM KEY
 # You can find YOUR key here: http://www.twitch.tv/broadcast/ (Show Key button)
@@ -46,12 +47,15 @@ ECHO_LOG=""
 if [ -z "$WEBCAM" ]; then
 	ECHO_LOG=$ECHO_LOG"\nYour Webcam has been disabled because there isn't a WEBCAM in the options"
 	WEBCAM="/dev/no-webcam"
-else 
+elif [ -z "$WEBCAM_WH" ]; then
 # checks to avoid a fail on loading the Webcam
-	if [ -z "$WEBCAM_WH" ]; then
-		ECHO_LOG=$ECHO_LOG"\nYour Webcam has been disabled because there isn't a WEBCAM_WH in the options"
-		WEBCAM="/dev/no-webcam"
-	fi
+	ECHO_LOG=$ECHO_LOG"\nYour Webcam has been disabled because there isn't a WEBCAM_WH in the options"
+	WEBCAM="/dev/no-webcam"
+elif [ -z "$WEBCAM_XY" ]; then
+# checks to avoid a fail on loading the Webcam
+	ECHO_LOG=$ECHO_LOG"\nThere isn't a WEBCAM_XY in the options, i'll generate the standard one"
+	#standard position is: main_w - overlay_w - 10:10
+	WEBCAM_XY="$(($(echo $OUTRES | awk -F"x" '{ print $1 }') - $(echo $WEBCAM_WH | awk -F":" '{ print $1 }') - 10)):10"
 fi
 
 # Find stream key
@@ -139,7 +143,8 @@ streamWebcam(){
         echo "Webcam found!!"
         echo "You should be online! Check on http://twitch.tv/ (Press CTRL+C to stop)"
         echo " "
-        avconv -f x11grab -s $INRES -framerate "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -g $GOP -keyint_min $GOPMIN -b:v $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film  -acodec libmp3lame -threads $THREADS -vf "movie=$WEBCAM:f=video4linux2, scale=$WEBCAM_WH , setpts=PTS-STARTPTS [WebCam]; [in] setpts=PTS-STARTPTS, [WebCam] overlay=main_w-overlay_w-10:10 [out]" -strict normal -bufsize $CBR $LOGLEVEL_ARG "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
+        avconv -f x11grab -s $INRES -framerate "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -g $GOP -keyint_min $GOPMIN -b:v $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film  -acodec libmp3lame -threads $THREADS -vf "movie=$WEBCAM:f=video4linux2, scale=$WEBCAM_WH , setpts=PTS-STARTPTS [WebCam]; [in] setpts=PTS-STARTPTS, [WebCam] overlay=$WEBCAM_XY [out]" -strict normal -bufsize $CBR $LOGLEVEL_ARG aaa.flv
+        #"rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
         APP_RETURN=$?
 }
 
