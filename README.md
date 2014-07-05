@@ -21,8 +21,9 @@ Authors:
 
 ###Contributors
 
-* İlteriş Eroğlu
+* İlteriş Eroğlu (linuxgemini)
 * yofreke
+* Vilsol
 
 How to
 ------
