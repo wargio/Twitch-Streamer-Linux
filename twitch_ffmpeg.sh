@@ -156,8 +156,8 @@ streamNoWebcam(){
 }
 
 loadModule(){
-	MODULE_LOAD1=$(pactl load-module module-null-sink sink_name=GameAudio) # For Game Audio
-	MODULE_LOAD2=$(pactl load-module module-null-sink sink_name=MicAudio ) # For Mic Audio
+	MODULE_LOAD1=$(pactl load-module module-null-sink sink_name=GameAudio sink_properties=device.description="GameAudio") # For Game Audio
+	MODULE_LOAD2=$(pactl load-module module-null-sink sink_name=MicAudio sink_properties=device.description="MicAudio") # For Mic Audio
 	pactl load-module module-device-manager >> /dev/null  
 	pactl load-module module-loopback sink=GameAudio >> /dev/null      
 	pactl load-module module-loopback sink=MicAudio >> /dev/null
