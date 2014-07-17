@@ -192,6 +192,25 @@ saveStreamNoWebcam(){
         APP_RETURN=$?
 }
 
+doDefaults(){
+	if [ $ALWAYS_FULLSCREEN = true ]; then
+		echo "[+] ALWAYS_FULLSCREEN is ON. Going to fullscreen!"
+		echo "[+] Output blocked!"
+		TOPXY="0,0"
+		INRES=$(xwininfo -root | awk '/geometry/ {print $2}'i | sed -e 's/\+[0-9]//g')
+		LOGLEVEL_ARG="-loglevel 0"
+		SUPPRESS_OUTPUT=true
+	else
+		echo "[+] Click, with the mouse, on the Window that you want to Stream"
+		rm -f twitch_tmp 2> /dev/null
+		xwininfo -stats >> twitch_tmp
+		TOPXY=$(cat twitch_tmp | awk 'FNR == 8 {print $4}')","$(cat twitch_tmp | awk 'FNR == 9 {print $4}')
+		INRES=$(cat twitch_tmp | awk 'FNR == 12 {print $2}')"x"$(cat twitch_tmp | awk 'FNR == 13 {print $2}')
+		rm -f twitch_tmp 2> /dev/null
+		echo " "
+	fi
+}
+
 loadModule(){
 	MODULE_LOAD1=$(pactl load-module module-null-sink sink_name=GameAudio sink_properties=device.description="GameAudio") # For Game Audio
 	MODULE_LOAD2=$(pactl load-module module-null-sink sink_name=MicAudio sink_properties=device.description="MicAudio") # For Mic Audio
@@ -277,22 +296,7 @@ if [ $# -ge 1 ]; then
 	fi
     done
 elif [ $# -eq 0 ]; then
-	if [ $ALWAYS_FULLSCREEN = true ]; then
-		echo "[+] ALWAYS_FULLSCREEN is ON. Going to fullscreen!"
-		echo "[+] Output blocked!"
-		TOPXY="0,0"
-		INRES=$(xwininfo -root | awk '/geometry/ {print $2}'i | sed -e 's/\+[0-9]//g')
-		LOGLEVEL_ARG="-loglevel 0"
-		SUPPRESS_OUTPUT=true
-	else
-		echo "[+] Click, with the mouse, on the Window that you want to Stream"
-		rm -f twitch_tmp 2> /dev/null
-		xwininfo -stats >> twitch_tmp
-		TOPXY=$(cat twitch_tmp | awk 'FNR == 8 {print $4}')","$(cat twitch_tmp | awk 'FNR == 9 {print $4}')
-		INRES=$(cat twitch_tmp | awk 'FNR == 12 {print $2}')"x"$(cat twitch_tmp | awk 'FNR == 13 {print $2}')
-		rm -f twitch_tmp 2> /dev/null
-		echo " "
-	fi
+	doDefaults
 else
 	# You should never get here.. but who knows..
 	echo "[+] There are some unknown params, please check what you wrote!"
@@ -308,6 +312,11 @@ loadModule
 
 # Disable trap
 trap - SIGHUP SIGINT SIGTERM
+# Checks if the screen got a setup
+if [ $SCREEN_SETUP -eq 0 ]; then
+    # if not then, get the defaults
+    doDefaults
+fi
 # Checks if the webcam is loaded
 if [ $STREAM_SAVE -eq 1 ]; then
      checkFileExists
@@ -326,7 +335,7 @@ fi
 # Checks if any error returned
 if [ $APP_RETURN -eq 1 ]; then
 	if [ $SUPPRESS_OUTPUT = true ]; then
-		echo "[+] Something went wrong. check the log without FULLSCREEN or SUPPRESS_OUTPUT"
+		echo "[+] Something went wrong. check the log without FULLSCREEN or SUPPRESS_OUTPUT options"
 	fi
 fi
 echo " "
