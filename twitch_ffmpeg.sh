@@ -297,6 +297,7 @@ if [ $# -ge 1 ]; then
     done
 elif [ $# -eq 0 ]; then
 	doDefaults
+	SCREEN_SETUP=1;
 else
 	# You should never get here.. but who knows..
 	echo "[+] There are some unknown params, please check what you wrote!"
