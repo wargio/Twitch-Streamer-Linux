@@ -47,6 +47,7 @@ How to
         SUPPRESS_OUTPUT    "false" or "true"        Change this to 'true' if you want to hide your STREAM_KEY, for security purpose. This will not affect 
                                                     the ALWAYS_FULLSCREEN option. ALWAYS_FULLSCREEN will always disable the output.
         AUDIO_RATE         "44100"                  Twitch Audio Rate. Twitch itself, says must be 2 channels with 44100 as rate; so DO NOT CHANGE IT!
+        FILE_VIDEO         "My_stream.flv"          File name to redirect the stream if there's the -save arg (go to the How To to see how it works)
 
 * Open the game that you want to stream and set window mode.
 * Open a terminal, browse to the twitch script directory and run the script
@@ -68,13 +69,15 @@ How to
 Additional How to
 -----------------
 
-* You can run the scripts with some arguments:
+* You can run the scripts with some arguments (you can use a combination of these):
 
         Value              Description                       
         ------------------ ----------------------------------------------------------------------------
          -h                Display the usage screen
          -fullscreen       Run the script in FULLSCREEN mode 
          -window           Run the script in WINDOW mode
+         -save             Save the video to the file FILE_VIDEO instead of streaming it
+	 -quiet            Disables most of the outputs (The Twitch KEY will be hided)
 
 
 Setup Audio (with pavucontrol):
@@ -116,6 +119,14 @@ FAQ
 
 	The standard position is: (ScreenWidth - WebcamWidth - 10):10 (Upper Right corner)
 	Keep in mind that the coordinates start from 0:0 (Upper Left corner) to Width:Height (Bottom Right corner)
+
+* How i can test the output before going to livestream?
+
+	Use the `-save` arg for the script: `./twitch_ffmpeg -save` or `./twitch_avconv -save`
+	in this way you can see how it looks like and change things if they are not ok.
+
+* How i can save the output instead of livestreaming?
+	Use the `-save` arg for the script: `./twitch_ffmpeg -save` or `./twitch_avconv -save`
 
 
 Screenshot:

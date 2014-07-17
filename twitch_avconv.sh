@@ -12,8 +12,11 @@ CBR="1000k"           # Constant bitrate (CBR) Increase this to get a better pix
 
 # Webcam Options
 WEBCAM="/dev/video1" # WebCam device
-WEBCAM_WH="320:240"  # WebCam Width end Height (in pixel)
+WEBCAM_WH="320:240"  # WebCam Width end Height
 WEBCAM_XY=""         # WebCam Position (in pixel) example: "10:10", if "" (empty) then it will set the standard position
+
+# File to save if you do not want to stream
+FILE_VIDEO="my.flv"  # File name
 
 # STREAM KEY
 # You can find YOUR key here: http://www.twitch.tv/broadcast/ (Show Key button)
@@ -38,7 +41,8 @@ AUDIO_RATE="44100"
 TOPXY="0,0"          # Position of the Window (You don't need to change this)
 INRES="0x0"          # Game Resolution (You don't need to change this)
 LOGLEVEL_ARG=""      # LogLevel, for security purpose (You don't need to change this) 
-
+SCREEN_SETUP=0       # Do not change this. it's used for the args.
+STREAM_SAVE=0        # Do not change this. it's used for the args.
 # ================================================= CHECKS =====================================================
 # To see the output.
 ECHO_LOG=""
@@ -53,9 +57,9 @@ elif [ -z "$WEBCAM_WH" ]; then
 	WEBCAM="/dev/no-webcam"
 elif [ -z "$WEBCAM_XY" ]; then
 # checks to avoid a fail on loading the Webcam
-	ECHO_LOG=$ECHO_LOG"\nThere isn't a WEBCAM_XY in the options, i'll generate the standard one"
 	#standard position is: main_w - overlay_w - 10:10
 	WEBCAM_XY="$(($(echo $OUTRES | awk -F"x" '{ print $1 }') - $(echo $WEBCAM_WH | awk -F":" '{ print $1 }') - 10)):10"
+	ECHO_LOG=$ECHO_LOG"\nThere isn't a WEBCAM_XY in the options, i'll generate the standard one ($WEBCAM_XY)"
 fi
 
 # Find stream key
@@ -118,6 +122,15 @@ fi
 if [ -z "$SUPPRESS_OUTPUT" ]; then
      SUPPRESS_OUTPUT=false
 fi
+if [ -z "$FILE_VIDEO" ]; then
+     FILE_VIDEO="video.flv"
+fi
+if [ ! $SCREEN_SETUP -eq 0 ]; then
+     SCREEN_SETUP=0
+fi
+if [ ! $STREAM_SAVE -eq 0 ]; then
+     STREAM_SAVE=0
+fi
 if [ -z "$STREAM_KEY" ]; then
      ECHO_LOG=$ECHO_LOG"\nSTREAM_KEY not set or there is a problem with it... Aborting."
      ECHO_LOG=$ECHO_LOG"\nCheck if the path to the file or the streaming key is correctly set."
@@ -130,21 +143,28 @@ MODULE_LOAD1=""
 MODULE_LOAD2=""
 APP_RETURN=""
 
-showUsage(){
-		echo "usage:"
-		echo "      "$SCRIPT_NAME" [options]"
-		echo "      -h          | show usage screen"
-		echo "      -fullscreen | enable the fullscreen"
-		echo "                    and disable the output"
-		echo "      -window     | enable the window mode"
+checkFileExists(){
+	if [ -f $FILE_VIDEO ]; then
+	     i=0
+	     TMP="OLD_"$i"_"$FILE_VIDEO
+	     echo "$FILE_VIDEO already exists! finding a new name for the old file"
+	     while [ -f $TMP ]
+	     do
+	     	i=$((i+1))
+	     	TMP="OLD_"$i"_"$FILE_VIDEO
+		echo "$TMP already exists"
+	     done
+	     echo "The old stream $FILE_VIDEO has been renamed as $TMP"
+	     echo "The new stream will be saved into $FILE_VIDEO"
+	     mv $FILE_VIDEO $TMP
+	fi
 }
 
 streamWebcam(){
         echo "Webcam found!!"
         echo "You should be online! Check on http://twitch.tv/ (Press CTRL+C to stop)"
         echo " "
-        avconv -f x11grab -s $INRES -framerate "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -g $GOP -keyint_min $GOPMIN -b:v $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film  -acodec libmp3lame -threads $THREADS -vf "movie=$WEBCAM:f=video4linux2, scale=$WEBCAM_WH , setpts=PTS-STARTPTS [WebCam]; [in] setpts=PTS-STARTPTS, [WebCam] overlay=$WEBCAM_XY [out]" -strict normal -bufsize $CBR $LOGLEVEL_ARG aaa.flv
-        #"rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
+        avconv -f x11grab -s $INRES -framerate "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -g $GOP -keyint_min $GOPMIN -b:v $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film  -acodec libmp3lame -threads $THREADS -vf "movie=$WEBCAM:f=video4linux2, scale=$WEBCAM_WH , setpts=PTS-STARTPTS [WebCam]; [in] setpts=PTS-STARTPTS, [WebCam] overlay=$WEBCAM_XY [out]" -strict normal -bufsize $CBR $LOGLEVEL_ARG "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
         APP_RETURN=$?
 }
 
@@ -153,6 +173,22 @@ streamNoWebcam(){
         echo "You should be online! Check on http://twitch.tv/ (Press CTRL+C to stop)"
         echo " "
         avconv -f x11grab -s $INRES -framerate "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -g $GOP -keyint_min $GOPMIN -b:v $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film -acodec libmp3lame -threads $THREADS -strict normal -bufsize $CBR $LOGLEVEL_ARG "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
+        APP_RETURN=$?
+}
+
+saveStreamWebcam(){
+        echo "Webcam found!!"
+        echo "You should be online! Check on http://twitch.tv/ (Press CTRL+C to stop)"
+        echo " "
+        avconv -f x11grab -s $INRES -framerate "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -g $GOP -keyint_min $GOPMIN -b:v $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film  -acodec libmp3lame -threads $THREADS -vf "movie=$WEBCAM:f=video4linux2, scale=$WEBCAM_WH , setpts=PTS-STARTPTS [WebCam]; [in] setpts=PTS-STARTPTS, [WebCam] overlay=$WEBCAM_XY [out]" -strict normal -bufsize $CBR $LOGLEVEL_ARG $FILE_VIDEO
+        APP_RETURN=$?
+}
+
+saveStreamNoWebcam(){
+        echo "Webcam NOT found!! ("$WEBCAM")"
+        echo "You should be online! Check on http://twitch.tv/ (Press CTRL+C to stop)"
+        echo " "
+        avconv -f x11grab -s $INRES -framerate "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -g $GOP -keyint_min $GOPMIN -b:v $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film -acodec libmp3lame -threads $THREADS -strict normal -bufsize $CBR $LOGLEVEL_ARG $LOGLEVEL_ARG $FILE_VIDEO
         APP_RETURN=$?
 }
 
@@ -174,6 +210,19 @@ unloadModule(){
 	echo "Exit!"
 }
 
+showUsage(){
+		echo "usage:"
+		echo "      "$SCRIPT_NAME" [options]"
+		echo "      -h          | show usage screen"
+		echo "      -fullscreen | enable the fullscreen"
+		echo "                    and disable the output"
+		echo "      -window     | enable the window mode"
+		echo "      -save       | save the video to a file"
+		echo "                    instead of streaming it"
+		echo "      -quiet      | disables most of the outputs"
+}
+
+
 echo " "
 echo "Twitch Streamer for Linux ("$SCRIPT_NAME")"
 echo "Copyright (c) 2013 - 2014, Giovanni Dante Grazioli (deroad)"
@@ -181,40 +230,62 @@ echo "Copyright (c) 2013 - 2014, Giovanni Dante Grazioli (deroad)"
 trap "unloadModule; exit" SIGHUP SIGINT SIGTERM
 echo -e $ECHO_LOG
 
-if [ $# -eq 1 ]; then
-    if [ $1 == "-h" ]; then
+if [ $# -ge 1 ]; then
+    for ARG in "$@"
+    do
+	if [ $ARG == "-h" ]; then
 		showUsage
 		exit 1
-	elif [ $1 == "-fullscreen" ]; then
-		echo "Going to fullscreen!"
-		echo "Output blocked!"
+	elif [ $ARG == "-fullscreen" ]; then
+		if [ ! $SCREEN_SETUP -eq 0 ]; then
+		    continue
+		fi
+		echo "[+] Going to fullscreen! Output blocked!"
 		TOPXY="0,0"
 		INRES=$(xwininfo -root | awk '/geometry/ {print $2}'i | sed -e 's/\+[0-9]//g')
 		LOGLEVEL_ARG="-loglevel 0"
 		SUPPRESS_OUTPUT=true
-	elif [ $1 == "-window" ]; then
-		echo "Click, with the mouse, on the Window that you want to Stream"
+		SCREEN_SETUP=1
+	elif [ $ARG == "-window" ]; then
+		if [ $SCREEN_SETUP -eq 1 ]; then
+		     continue
+		fi
+		echo "[+] Click, with the mouse, on the Window that you want to Stream"
 		rm -f twitch_tmp 2> /dev/null
 		xwininfo -stats >> twitch_tmp
 		TOPXY=$(cat twitch_tmp | awk 'FNR == 8 {print $4}')","$(cat twitch_tmp | awk 'FNR == 9 {print $4}')
 		INRES=$(cat twitch_tmp | awk 'FNR == 12 {print $2}')"x"$(cat twitch_tmp | awk 'FNR == 13 {print $2}')
 		rm -f twitch_tmp 2> /dev/null
-		echo " "
+		SCREEN_SETUP=2
+	elif [ $ARG == "-save" ]; then
+		if [ ! $STREAM_SAVE -eq 0 ]; then
+		     continue
+		fi
+		echo "[+] Saving the video into $FILE_VIDEO instead of stream to Twitch.tv"
+		STREAM_SAVE=1
+	elif [ $ARG == "-quiet" ]; then
+		if [ $SUPPRESS_OUTPUT = true ]; then
+		     continue
+		fi
+		echo "[+] Quiet Mode"
+		LOGLEVEL_ARG="-loglevel 0"
+		SUPPRESS_OUTPUT=true
 	else
-		echo "Unknown param:" $1
+		echo "[+] Unknown param:" $ARG
 		showUsage
 		exit 1
 	fi
+    done
 elif [ $# -eq 0 ]; then
 	if [ $ALWAYS_FULLSCREEN = true ]; then
-		echo "ALWAYS_FULLSCREEN is ON. Going to fullscreen!"
-		echo "Output blocked!"
+		echo "[+] ALWAYS_FULLSCREEN is ON. Going to fullscreen!"
+		echo "[+] Output blocked!"
 		TOPXY="0,0"
 		INRES=$(xwininfo -root | awk '/geometry/ {print $2}'i | sed -e 's/\+[0-9]//g')
 		LOGLEVEL_ARG="-loglevel 0"
 		SUPPRESS_OUTPUT=true
 	else
-		echo "Click, with the mouse, on the Window that you want to Stream"
+		echo "[+] Click, with the mouse, on the Window that you want to Stream"
 		rm -f twitch_tmp 2> /dev/null
 		xwininfo -stats >> twitch_tmp
 		TOPXY=$(cat twitch_tmp | awk 'FNR == 8 {print $4}')","$(cat twitch_tmp | awk 'FNR == 9 {print $4}')
@@ -223,12 +294,13 @@ elif [ $# -eq 0 ]; then
 		echo " "
 	fi
 else
-	echo "There are some unknown params, please check what you wrote!"
-	echo "Params: " $@
+	# You should never get here.. but who knows..
+	echo "[+] There are some unknown params, please check what you wrote!"
+	echo "[+] Params: " $@
 	showUsage
 	exit 1
 fi
-
+echo " "
 # Setup
 echo "Please setup the Audio Output to sink null (something like 'pavucontrol')"
 # if you see errors here, please report on github
@@ -237,16 +309,24 @@ loadModule
 # Disable trap
 trap - SIGHUP SIGINT SIGTERM
 # Checks if the webcam is loaded
-if [ -c $WEBCAM ]; then
-     streamWebcam
+if [ $STREAM_SAVE -eq 1 ]; then
+     checkFileExists
+     if [ -c $WEBCAM ]; then
+	saveStreamWebcam
+     else
+	saveStreamNoWebcam
+     fi
 else
-     streamNoWebcam
+     if [ -c $WEBCAM ]; then
+	streamWebcam
+     else
+	streamNoWebcam
+     fi
 fi
-
 # Checks if any error returned
 if [ $APP_RETURN -eq 1 ]; then
 	if [ $SUPPRESS_OUTPUT = true ]; then
-		echo "Something went wrong. check the log without FULLSCREEN or SUPPRESS_OUTPUT"
+		echo "[+] Something went wrong. check the log without FULLSCREEN or SUPPRESS_OUTPUT"
 	fi
 fi
 echo " "
