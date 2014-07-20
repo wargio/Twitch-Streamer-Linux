@@ -77,7 +77,7 @@ Additional How to
          -fullscreen       Run the script in FULLSCREEN mode 
          -window           Run the script in WINDOW mode
          -save             Save the video to the file FILE_VIDEO instead of streaming it
-	 -quiet            Disables most of the outputs (The Twitch KEY will be hided)
+         -quiet            Disables most of the outputs (The Twitch KEY will be hided)
 
 
 Setup Audio (with pavucontrol):
