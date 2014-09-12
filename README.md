@@ -2,6 +2,7 @@ Twitch Streamer For Linux
 =========================
 
 This is a script dedicated to stream to Twitch.tv. it also has Webcam support!
+**AVCONV script is DEPRECATED, due libav drama, etc...**
 
 Tested on:
 * Linux:    Ubuntu 13.04
@@ -62,7 +63,7 @@ How to
 * Now you should be live (check on your channel).
 * You can set the Audio settings (select the Null Output on pavucontrol)
 * To stop the stream, click on the terminal and press CTRL+C
-* **BE CAREFUL ON SHOWING THE TERMINAL SINCE AVCONV/FFMPEG PRINTS ON THE TERMINAL THE KEY**
+* **BE CAREFUL ON SHOWING THE TERMINAL SINCE FFMPEG PRINTS ON THE TERMINAL THE KEY**
 * For suggestion or bugfix, please write to me on github. (I love suggestions! <3 )
 * Please do NOT write for support on my BLOG. post bug reports on http://github.com/wargio/Twitch-Streamer-Linux !
 
@@ -94,9 +95,17 @@ Setup Audio (with pavucontrol):
 
 Dependencies:
 -------------
-These dependencies are not the name of the packages that you need. They are the name of the executables/libs that you need.
+These dependencies are not the name of the packages that you need. The libs names can change!.
 
-        avconv pulseaudio alsa xwininfo pactl ffmpeg libavcodec-extra-53
+        xwininfo pactl libfaac-dev libmp3lame-dev libv4l2-dev libx264-dev x11grab-dev libpulse-dev librtmp-dev libasound-dev
+
+Grab the latest `ffmpeg` from:
+
+	git clone git://source.ffmpeg.org/ffmpeg.git ffmpeg
+
+Build it with the following build options:
+
+	./configure --disable-ffplay --disable-ffprobe --disable-ffserver --enable-libfaac --enable-libmp3lame --enable-libv4l2 --enable-libx264 --enable-x11grab --enable-libpulse --enable-librtmp --enable-gpl --enable-nonfree --disable-yasm  --extra-libs="-lasound"
 
 ###Suggested:
 
@@ -127,6 +136,9 @@ FAQ
 
 * How i can save the output instead of livestreaming?
 	Use the `-save` arg for the script: `./twitch_ffmpeg -save` or `./twitch_avconv -save`
+
+* Why the avconv script is deprecated?
+	It's deprecated due libav drama. Please use ffmpeg.
 
 
 Screenshot:
