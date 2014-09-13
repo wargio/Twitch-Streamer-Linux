@@ -95,9 +95,9 @@ Setup Audio (with pavucontrol):
 
 Dependencies:
 -------------
-These dependencies are not the name of the packages that you need. The libs names can change!.
+These dependencies are the name of the packages that you need. The libs names can change!.
 
-        xwininfo pactl libfaac-dev libmp3lame-dev libv4l2-dev libx264-dev x11grab-dev libpulse-dev librtmp-dev libasound-dev
+         x11-utils pulseaudio-utils libfaac-dev libmp3lame-dev libv4l-dev libx264-dev libpulse-dev librtmp-dev libasound-dev
 
 Grab the latest `ffmpeg` from:
 
