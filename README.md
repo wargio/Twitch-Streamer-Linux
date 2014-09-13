@@ -53,12 +53,9 @@ How to
 * Open the game that you want to stream and set window mode.
 * Open a terminal, browse to the twitch script directory and run the script
 
-        $ ./twitch_avconv.sh 
-
-* If the avconv script gives you an error, use FFMPEG version. works exactly the same.
-
         $ ./twitch_ffmpeg.sh 
 
+* Avconv script is deprecated. It can give you errors
 * Click with your Mouse on the game window
 * Now you should be live (check on your channel).
 * You can set the Audio settings (select the Null Output on pavucontrol)
@@ -95,9 +92,9 @@ Setup Audio (with pavucontrol):
 
 Dependencies:
 -------------
-These dependencies are the name of the packages that you need. The libs names can change!.
+These dependencies are the name of the packages that you need. The libs names can change from distro to distro!.
 
-         x11-utils pulseaudio-utils libfaac-dev libmp3lame-dev libv4l-dev libx264-dev libpulse-dev librtmp-dev libasound-dev
+         x11-utils pulseaudio-utils libfaac-dev libmp3lame-dev libv4l-dev libx264-dev libpulse-dev librtmp-dev libasound2-dev X11proto-xext-dev
 
 Grab the latest `ffmpeg` from:
 
