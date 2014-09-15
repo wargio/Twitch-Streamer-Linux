@@ -47,8 +47,11 @@ How to
         ALWAYS_FULLSCREEN  "false" or "true"        Change this to 'true' if you want to go always on FULLSCREEN, this will disable the output.
         SUPPRESS_OUTPUT    "false" or "true"        Change this to 'true' if you want to hide your STREAM_KEY, for security purpose. This will not affect 
                                                     the ALWAYS_FULLSCREEN option. ALWAYS_FULLSCREEN will always disable the output.
-        AUDIO_RATE         "44100"                  Twitch Audio Rate. Twitch itself, says must be 2 channels with 44100 as rate; so DO NOT CHANGE IT!
         FILE_VIDEO         "My_stream.flv"          File name to redirect the stream if there's the -save arg (go to the How To to see how it works)
+        SET_XY             "10,100"                 Position of the Window on the screen (X,Y) and will be used only if the -coords option is called.
+        SET_INRES          "1024x600"               Window size (WxH) and will be used only if the -coords option is called.
+        AUDIO_RATE         "44100"                  Twitch Audio Rate. Twitch itself, says must be 2 channels with 44100 as rate; so DO NOT CHANGE IT!
+        KEY_FRAME          "2"                      Twitch Video Key Frame. Twitch itself, says must be 2, so DO NOT CHANGE IT!
 
 * Open the game that you want to stream and set window mode.
 * Open a terminal, browse to the twitch script directory and run the script
@@ -70,10 +73,11 @@ Additional How to
 * You can run the scripts with some arguments (you can use a combination of these):
 
         Value              Description                       
-        ------------------ ----------------------------------------------------------------------------
+        ------------------ -------------------------------------------------------------------------------
          -h                Display the usage screen
          -fullscreen       Run the script in FULLSCREEN mode 
          -window           Run the script in WINDOW mode
+	 -coords           Set the screen resolution, by using SET_XY SET_INRES defined inside the script
          -save             Save the video to the file FILE_VIDEO instead of streaming it
          -quiet            Disables most of the outputs (The Twitch KEY will be hided)
 
@@ -94,7 +98,7 @@ Dependencies:
 -------------
 These dependencies are the name of the packages that you need. The libs names can change from distro to distro!.
 
-         x11-utils pulseaudio-utils libfaac-dev libmp3lame-dev libv4l-dev libx264-dev libpulse-dev librtmp-dev libasound2-dev X11proto-xext-dev
+         x11-utils  pulseaudio-utils libfaac-dev libmp3lame-dev libv4l-dev libx264-dev libpulse-dev librtmp-dev libasound2-dev X11proto-xext-dev libxext-dev
 
 Grab the latest `ffmpeg` from:
 

@@ -29,6 +29,10 @@ FILE_VIDEO="my.flv"  # File name
 # Twitch Server list http://bashtech.net/twitch/ingest.php
 SERVER="live-fra"    # EU server
 
+# These will be used only if the -coords option is called.
+SET_XY="100,128"		# Position of the Window on the screen (X,Y)
+SET_INRES="400x300"		# Window size (WxH)
+
 # Change this to 'true' if you want to go always on FULLSCREEN, this will disable the output.
 ALWAYS_FULLSCREEN=false
 
@@ -38,7 +42,8 @@ SUPPRESS_OUTPUT=false
 
 # Twitch says it MUST have a 44100 rate, please do not change it unless you know what you are doing.
 AUDIO_RATE="44100"
-
+# Twitch says it MUST be 2, please do not change it unless you know what you are doing.
+KEY_FRAME="2"
 
 # ============================================== END OPTIONS ===================================================
 # The following values are changed automatically, so do not change them
@@ -168,7 +173,7 @@ streamWebcam(){
                 WEBCAM_XY="$(($(echo $INRES | awk -F"x" '{ print $1 }') - $(echo $WEBCAM_WH | awk -F":" '{ print $1 }') - 10)):10"
                 echo "There isn't a WEBCAM_XY in the options, i'll generate the standard one ($WEBCAM_XY)"
         fi
-        $FFMPEG_PATH -f x11grab -s $INRES -framerate "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -g $GOP -keyint_min $GOPMIN -b $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film  -acodec libmp3lame -threads $THREADS -vf "movie=$WEBCAM:f=video4linux2, scale=$WEBCAM_WH , setpts=PTS-STARTPTS [WebCam]; [in] setpts=PTS-STARTPTS [Screen]; [Screen][WebCam] overlay=$WEBCAM_XY [out]" -strict normal -bufsize $CBR $LOGLEVEL_ARG "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
+        $FFMPEG_PATH -f x11grab -s $INRES -framerate "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -force_key_frames "expr:gte(t,n_forced*$KEY_FRAME)" -g $GOP -keyint_min $GOPMIN -b $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film  -acodec libmp3lame -threads $THREADS -vf "movie=$WEBCAM:f=video4linux2, scale=$WEBCAM_WH , setpts=PTS-STARTPTS [WebCam]; [in] setpts=PTS-STARTPTS [Screen]; [Screen][WebCam] overlay=$WEBCAM_XY [out]" -strict normal -bufsize $CBR $LOGLEVEL_ARG "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
         APP_RETURN=$?
 }
 
@@ -176,7 +181,7 @@ streamNoWebcam(){
         echo "Webcam NOT found!! ("$WEBCAM")"
         echo "You should be online! Check on http://twitch.tv/ (Press CTRL+C to stop)"
         echo " "
-        $FFMPEG_PATH -f x11grab -s $INRES -framerate "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -g $GOP -keyint_min $GOPMIN  -b:v $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film -acodec libmp3lame -threads $THREADS -strict normal -bufsize $CBR $LOGLEVEL_ARG "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
+        $FFMPEG_PATH -f x11grab -s $INRES -framerate "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -force_key_frames "expr:gte(t,n_forced*$KEY_FRAME)" -g $GOP -keyint_min $GOPMIN  -b:v $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film -acodec libmp3lame -threads $THREADS -strict normal -bufsize $CBR $LOGLEVEL_ARG "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
         APP_RETURN=$?
 }
 
@@ -190,7 +195,7 @@ saveStreamWebcam(){
                 WEBCAM_XY="$(($(echo $INRES | awk -F"x" '{ print $1 }') - $(echo $WEBCAM_WH | awk -F":" '{ print $1 }') - 10)):10"
                 echo "There isn't a WEBCAM_XY in the options, i'll generate the standard one ($WEBCAM_XY)"
         fi
-        $FFMPEG_PATH -f x11grab -s $INRES -framerate "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -g $GOP -keyint_min $GOPMIN -b $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film  -acodec libmp3lame -threads $THREADS -vf "movie=$WEBCAM:f=video4linux2, scale=$WEBCAM_WH , setpts=PTS-STARTPTS [WebCam]; [in] setpts=PTS-STARTPTS [Screen]; [Screen][WebCam] overlay=$WEBCAM_XY [out]" -strict normal -bufsize $CBR $LOGLEVEL_ARG $FILE_VIDEO
+        $FFMPEG_PATH -f x11grab -s $INRES -framerate "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -force_key_frames "expr:gte(t,n_forced*$KEY_FRAME)" -g $GOP -keyint_min $GOPMIN -b $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film  -acodec libmp3lame -threads $THREADS -vf "movie=$WEBCAM:f=video4linux2, scale=$WEBCAM_WH , setpts=PTS-STARTPTS [WebCam]; [in] setpts=PTS-STARTPTS [Screen]; [Screen][WebCam] overlay=$WEBCAM_XY [out]" -strict normal -bufsize $CBR $LOGLEVEL_ARG $FILE_VIDEO
         APP_RETURN=$?
 }
 
@@ -198,7 +203,7 @@ saveStreamNoWebcam(){
         echo "Webcam NOT found!! ("$WEBCAM")"
         echo "You should be online! Check on http://twitch.tv/ (Press CTRL+C to stop)"
         echo " "
-        $FFMPEG_PATH -f x11grab -s $INRES -framerate "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -g $GOP -keyint_min $GOPMIN  -b:v $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film -acodec libmp3lame -threads $THREADS -strict normal -bufsize $CBR $LOGLEVEL_ARG $FILE_VIDEO
+        $FFMPEG_PATH -f x11grab -s $INRES -framerate "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -force_key_frames "expr:gte(t,n_forced*$KEY_FRAME)" -g $GOP -keyint_min $GOPMIN  -b:v $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film -acodec libmp3lame -threads $THREADS -strict normal -bufsize $CBR $LOGLEVEL_ARG $FILE_VIDEO
         APP_RETURN=$?
 }
 
@@ -246,6 +251,9 @@ showUsage(){
 		echo "      -fullscreen | enable the fullscreen"
 		echo "                    and disable the output"
 		echo "      -window     | enable the window mode"
+		echo "      -coords     | set the screen resolution"
+		echo "                    by using SET_XY SET_INRES"
+		echo "                    defined inside the script"
 		echo "      -save       | save the video to a file"
 		echo "                    instead of streaming it"
 		echo "      -quiet      | disables most of the outputs"
@@ -258,7 +266,6 @@ echo "Copyright (c) 2013 - 2014, Giovanni Dante Grazioli (deroad)"
 # To be sure to unload everything
 trap "unloadModule; exit" SIGHUP SIGINT SIGTERM
 echo -e $ECHO_LOG
-
 if [ $# -ge 1 ]; then
     for ARG in "$@"
     do
@@ -286,6 +293,17 @@ if [ $# -ge 1 ]; then
 		INRES=$(cat twitch_tmp | awk 'FNR == 12 {print $2}')"x"$(cat twitch_tmp | awk 'FNR == 13 {print $2}')
 		rm -f twitch_tmp 2> /dev/null
 		SCREEN_SETUP=2
+	elif [ $ARG == "-coords" ]; then
+		if [ $SCREEN_SETUP -eq 1 ]; then
+		     continue
+		elif [ "$SET_INRES" != "0x0" ]; then
+			TOPXY=$SET_XY
+			INRES=$SET_INRES
+			echo "[+] Using pre-defined screen coords (X,Y = $TOPXY) (WxH = $INRES)."
+			SCREEN_SETUP=2
+		else
+			echo "[+] Could not use pre-defined screen coords, because 'SET_INRES' equals '0x0'."
+		fi
 	elif [ $ARG == "-save" ]; then
 		if [ ! $STREAM_SAVE -eq 0 ]; then
 		     continue
