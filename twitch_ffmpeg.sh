@@ -30,8 +30,8 @@ FILE_VIDEO="my.flv"  # File name
 SERVER="live-fra"    # EU server
 
 # These will be used only if the -coords option is called.
-SET_XY="100,128"		# Position of the Window on the screen (X,Y)
-SET_INRES="400x300"		# Window size (WxH)
+SET_XY="0,0"		# Position of the Window on the screen (X,Y)
+SET_INRES="0x0"		# Window size (WxH)
 
 # Change this to 'true' if you want to go always on FULLSCREEN, this will disable the output.
 ALWAYS_FULLSCREEN=false
