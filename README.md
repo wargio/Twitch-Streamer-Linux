@@ -25,6 +25,7 @@ Authors:
 * İlteriş Eroğlu (linuxgemini)
 * yofreke
 * Vilsol
+* grifinas
 
 How to
 ------
@@ -39,6 +40,8 @@ How to
         FPS                "24"                     Frame per Seconds (Suggested 24, 25, 30 or 60)
         THREADS            "4"                      Change this if you have a good CPU (Suggested 4 threads, Max 6 threads)
         QUALITY            "medium" or "veryfast"   Streaming Quality (ultrafast, superfast, veryfast, faster, fast, medium, slow, slower, veryslow, placebo)
+		OverlayPath		   "./Overlays/" 			Path to the overlay file or directory you want to use (if it's a directory then script will try to use all files in it as overlays)
+		OverlayStartCoord  "0:0"					Screen coordinate from where overlays are drawn (use to make different resolutions work well together)
         WEBCAM             "/dev/video1"            WebCam chardevice under /dev
         WEBCAM_WH          "320:240"                WebCam Width end Height in the Output
         WEBCAM_XY          "10:10"                  WebCam Position if empty then it will set the standard position
