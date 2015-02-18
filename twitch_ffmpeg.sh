@@ -4,7 +4,7 @@
 
 # ================================================ OPTIONS =====================================================
 # Add the FFMPEG ABSOLUTE PATH "/path/to/ffmpeg"
-FFMPEG_PATH="ffmpeg"
+FFMPEG_PATH="./ffmpeg/ffmpeg"
 
 # Streaming Options
 OUTRES="1280x720"     # Twitch Output Resolution
@@ -16,10 +16,20 @@ CBR="1000k"           # Constant bitrate (CBR) Increase this to get a better pix
 # Webcam Options
 WEBCAM="/dev/video1" # WebCam device
 WEBCAM_WH="320:240"  # WebCam Width end Height
-WEBCAM_XY=""         # WebCam Position (in pixel) example: "10:10", if "" (empty) then it will set the standard position
+WEBCAM_XY="0:0"         # WebCam Position (in pixel) example: "10:10", if "" (empty) then it will set the standard position
+
+#Overlay options
+OverlayPath="./Overlays/" 	#path to the overlay file you want to use
+OverlayStartCoord="0:0"					#Screen coordinate from where overlays are drawn (use to make different resolutions work well together)
+
+#stream seting base, DO NOT Change
+Where_to=""
+StrimParam_cfs="" #complex filtering seting variable
+StrimParam_ovl="" 		#overlay importing variable 
 
 # File to save if you do not want to stream
 FILE_VIDEO="my.flv"  # File name
+
 
 # STREAM KEY
 # You can find YOUR key here: http://www.twitch.tv/broadcast/ (Show Key button)
@@ -128,6 +138,9 @@ fi
 if [ -z "$FILE_VIDEO" ]; then
      FILE_VIDEO="video.flv"
 fi
+if [ -z WEBCAM_XY ]; then
+	WEBCAM_XY="0:0"
+fi
 if [ ! $SCREEN_SETUP -eq 0 ]; then
      SCREEN_SETUP=0
 fi
@@ -163,48 +176,14 @@ checkFileExists(){
 	fi
 }
 
-streamWebcam(){
-        echo "Webcam found!!"
-        echo "You should be online! Check on http://twitch.tv/ (Press CTRL+C to stop)"
-        echo " "
-        if [ -z "$WEBCAM_XY" ]; then
-                # checks to avoid a fail on loading the Webcam
-                #standard position is: main_w - overlay_w - 10:10
-                WEBCAM_XY="$(($(echo $INRES | awk -F"x" '{ print $1 }') - $(echo $WEBCAM_WH | awk -F":" '{ print $1 }') - 10)):10"
-                echo "There isn't a WEBCAM_XY in the options, i'll generate the standard one ($WEBCAM_XY)"
-        fi
-        $FFMPEG_PATH -f x11grab -s $INRES -framerate "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -force_key_frames "expr:gte(t,n_forced*$KEY_FRAME)" -g $GOP -keyint_min $GOPMIN -b $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film  -acodec libmp3lame -threads $THREADS -vf "movie=$WEBCAM:f=video4linux2, scale=$WEBCAM_WH , setpts=PTS-STARTPTS [WebCam]; [in] setpts=PTS-STARTPTS [Screen]; [Screen][WebCam] overlay=$WEBCAM_XY [out]" -strict normal -bufsize $CBR $LOGLEVEL_ARG "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
-        APP_RETURN=$?
-}
-
-streamNoWebcam(){
-        echo "Webcam NOT found!! ("$WEBCAM")"
-        echo "You should be online! Check on http://twitch.tv/ (Press CTRL+C to stop)"
-        echo " "
-        $FFMPEG_PATH -f x11grab -s $INRES -framerate "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -force_key_frames "expr:gte(t,n_forced*$KEY_FRAME)" -g $GOP -keyint_min $GOPMIN  -b:v $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film -acodec libmp3lame -threads $THREADS -strict normal -bufsize $CBR $LOGLEVEL_ARG "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
-        APP_RETURN=$?
-}
-
-saveStreamWebcam(){
-        echo "Webcam found!!"
-        echo "You should be online! Check on http://twitch.tv/ (Press CTRL+C to stop)"
-        echo " "
-        if [ -z "$WEBCAM_XY" ]; then
-                # checks to avoid a fail on loading the Webcam
-                #standard position is: main_w - overlay_w - 10:10
-                WEBCAM_XY="$(($(echo $INRES | awk -F"x" '{ print $1 }') - $(echo $WEBCAM_WH | awk -F":" '{ print $1 }') - 10)):10"
-                echo "There isn't a WEBCAM_XY in the options, i'll generate the standard one ($WEBCAM_XY)"
-        fi
-        $FFMPEG_PATH -f x11grab -s $INRES -framerate "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -force_key_frames "expr:gte(t,n_forced*$KEY_FRAME)" -g $GOP -keyint_min $GOPMIN -b $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film  -acodec libmp3lame -threads $THREADS -vf "movie=$WEBCAM:f=video4linux2, scale=$WEBCAM_WH , setpts=PTS-STARTPTS [WebCam]; [in] setpts=PTS-STARTPTS [Screen]; [Screen][WebCam] overlay=$WEBCAM_XY [out]" -strict normal -bufsize $CBR $LOGLEVEL_ARG $FILE_VIDEO
-        APP_RETURN=$?
-}
-
-saveStreamNoWebcam(){
-        echo "Webcam NOT found!! ("$WEBCAM")"
-        echo "You should be online! Check on http://twitch.tv/ (Press CTRL+C to stop)"
-        echo " "
-        $FFMPEG_PATH -f x11grab -s $INRES -framerate "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -force_key_frames "expr:gte(t,n_forced*$KEY_FRAME)" -g $GOP -keyint_min $GOPMIN  -b:v $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film -acodec libmp3lame -threads $THREADS -strict normal -bufsize $CBR $LOGLEVEL_ARG $FILE_VIDEO
-        APP_RETURN=$?
+FocusChoise() {
+	echo "[+] Click, with the mouse, on the Window that you want to Stream"
+	rm -f twitch_tmp 2> /dev/null
+	xwininfo -stats >> twitch_tmp
+	TOPXY=$(cat twitch_tmp | awk 'FNR == 8 {print $4}')","$(cat twitch_tmp | awk 'FNR == 9 {print $4}')
+	INRES=$(cat twitch_tmp | awk 'FNR == 12 {print $2}')"x"$(cat twitch_tmp | awk 'FNR == 13 {print $2}')
+	rm -f twitch_tmp 2> /dev/null
+	echo " "
 }
 
 doDefaults(){
@@ -216,13 +195,7 @@ doDefaults(){
 		LOGLEVEL_ARG="-loglevel 0"
 		SUPPRESS_OUTPUT=true
 	else
-		echo "[+] Click, with the mouse, on the Window that you want to Stream"
-		rm -f twitch_tmp 2> /dev/null
-		xwininfo -stats >> twitch_tmp
-		TOPXY=$(cat twitch_tmp | awk 'FNR == 8 {print $4}')","$(cat twitch_tmp | awk 'FNR == 9 {print $4}')
-		INRES=$(cat twitch_tmp | awk 'FNR == 12 {print $2}')"x"$(cat twitch_tmp | awk 'FNR == 13 {print $2}')
-		rm -f twitch_tmp 2> /dev/null
-		echo " "
+		FocusChoise
 	fi
 }
 
@@ -259,6 +232,96 @@ showUsage(){
 		echo "      -quiet      | disables most of the outputs"
 }
 
+AdaptStreamSetings() {
+	if [ -c $WEBCAM ]; then
+		if [ -z $WEBCAM_XY ]; then
+			# checks to avoid a fail on loading the Webcam
+			#standard position is: main_w - overlay_w - 10:10
+			WEBCAM_XY="$(($(echo $INRES | awk -F"x" '{ print $1 }') - $(echo $WEBCAM_WH | awk -F":" '{ print $1 }') - 10)):10"
+			echo "There isn't a WEBCAM_XY in the options, i'll generate the standard one ($WEBCAM_XY)"
+		fi
+		StrimParam_cfs="movie=$WEBCAM:f=video4linux2,scale=$WEBCAM_WH,setpts=PTS-STARTPTS[WebCam];[0:v]setpts=PTS-STARTPTS[Screen];[Screen][WebCam]overlay=$WEBCAM_XY"
+	else
+		echo "Webcam NOT found!! ("$WEBCAM")"
+	fi
+	
+	echo "path comparing to:"$OverlayPath
+	if [ -d $OverlayPath ]; then
+		count=0
+		OverlayPath="$OverlayPath*"
+		for aa in $OverlayPath ; do
+			StrimParam_ovl="$StrimParam_ovl -i $aa"
+			count=$(( $count + 1 ))
+		done
+		if [ -c $WEBCAM ]; then
+			i=1
+			while [ $i -lt $count ]; do
+				StrimParam_cfs="$StrimParam_cfs[ph$i];[ph$i][$i:v]overlay=$OverlayStartCoord"
+				echo $i
+				i=$(( $i + 1 ))
+			done
+		else 
+			StrimParam_cfs="[0:v] setpts=PTS-STARTPTS "
+			i=1
+			while [ $i -lt $count ]; do
+				StrimParam_cfs="$StrimParam_cfs[ph$i];[ph$i][$i:v]overlay=$OverlayStartCoord"
+				i=$(( $i + 1 ))
+			done
+		fi
+	elif [ -f $OverlayPath ]; then
+		StrimParam_cfs="[0:v] "
+		StrimParam_ovl="-i $OverlayPath"
+		StrimParam_cfs="$StrimParam_cfs[1:v]overlay=$OverlayStartCoord"
+	else
+		echo "no overlay is used cause path is not used or incorrect"
+	fi
+}
+
+stream() {
+	echo "You should be online! Check on http://twitch.tv/ (Press CTRL+C to stop)"
+	echo " "
+	echo "where to is "$Where_to
+	echo "strim param ovl is $StrimParam_ovl"
+	echo "strim param cfs is $StrimParam_cfs"
+	echo " "
+	echo " "
+	if [ -z $StrimParam_cfs ]; then
+		$FFMPEG_PATH -f x11grab -s $INRES -framerate "$FPS" -i :0.0+$TOPXY $StrimParam_ovl -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -force_key_frames "expr:gte(t,n_forced*$KEY_FRAME)" -g $GOP -keyint_min $GOPMIN -b:v $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film  -acodec libmp3lame -threads $THREADS -strict normal -bufsize $CBR $LOGLEVEL_ARG $Where_to
+	else
+		$FFMPEG_PATH -f x11grab -s $INRES -framerate "$FPS" -i :0.0+$TOPXY $StrimParam_ovl -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -force_key_frames "expr:gte(t,n_forced*$KEY_FRAME)" -g $GOP -keyint_min $GOPMIN -b:v $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film  -acodec libmp3lame -threads $THREADS -filter_complex "$StrimParam_cfs" -strict normal -bufsize $CBR $LOGLEVEL_ARG $Where_to
+	fi
+	APP_RETURN=$?
+}
+
+Setup() {
+# Setup
+echo "Please setup the Audio Output to sink null (something like 'pavucontrol')"
+# if you see errors here, please report on github
+loadModule
+
+AdaptStreamSetings
+# Checks if the screen got a setup
+if [ $SCREEN_SETUP -eq 0 ]; then
+    # if not then, get the defaults
+    doDefaults
+fi
+# Checks if the webcam is loaded
+if [ $STREAM_SAVE -eq 1 ]; then
+     checkFileExists
+	 Where_to=$FILE_VIDEO
+	 stream
+else
+    Where_to="rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
+	stream
+fi
+# Checks if any error returned
+if [ $APP_RETURN -eq 1 ]; then
+	if [ $SUPPRESS_OUTPUT = true ]; then
+		echo "[+] Something went wrong. check the log without FULLSCREEN or SUPPRESS_OUTPUT options"
+	fi
+fi
+echo " "
+}
 
 echo " "
 echo "Twitch Streamer for Linux ("$SCRIPT_NAME")"
@@ -267,7 +330,7 @@ echo "Copyright (c) 2013 - 2014, Giovanni Dante Grazioli (deroad)"
 trap "unloadModule; exit" SIGHUP SIGINT SIGTERM
 echo -e $ECHO_LOG
 if [ $# -ge 1 ]; then
-    for ARG in "$@"
+	for ARG in "$@"
     do
 	if [ $ARG == "-h" ]; then
 		showUsage
@@ -286,12 +349,7 @@ if [ $# -ge 1 ]; then
 		if [ $SCREEN_SETUP -eq 1 ]; then
 		     continue
 		fi
-		echo "[+] Click, with the mouse, on the Window that you want to Stream"
-		rm -f twitch_tmp 2> /dev/null
-		xwininfo -stats >> twitch_tmp
-		TOPXY=$(cat twitch_tmp | awk 'FNR == 8 {print $4}')","$(cat twitch_tmp | awk 'FNR == 9 {print $4}')
-		INRES=$(cat twitch_tmp | awk 'FNR == 12 {print $2}')"x"$(cat twitch_tmp | awk 'FNR == 13 {print $2}')
-		rm -f twitch_tmp 2> /dev/null
+		FocusChoise
 		SCREEN_SETUP=2
 	elif [ $ARG == "-coords" ]; then
 		if [ $SCREEN_SETUP -eq 1 ]; then
@@ -334,41 +392,10 @@ else
 	exit 1
 fi
 echo " "
-# Setup
-echo "Please setup the Audio Output to sink null (something like 'pavucontrol')"
-# if you see errors here, please report on github
-loadModule
+
+Setup
 
 # Disable trap
 trap - SIGHUP SIGINT SIGTERM
-# Checks if the screen got a setup
-if [ $SCREEN_SETUP -eq 0 ]; then
-    # if not then, get the defaults
-    doDefaults
-fi
-# Checks if the webcam is loaded
-if [ $STREAM_SAVE -eq 1 ]; then
-     checkFileExists
-     if [ -c $WEBCAM ]; then
-	saveStreamWebcam
-     else
-	saveStreamNoWebcam
-     fi
-else
-     if [ -c $WEBCAM ]; then
-	streamWebcam
-     else
-	streamNoWebcam
-     fi
-fi
-# Checks if any error returned
-if [ $APP_RETURN -eq 1 ]; then
-	if [ $SUPPRESS_OUTPUT = true ]; then
-		echo "[+] Something went wrong. check the log without FULLSCREEN or SUPPRESS_OUTPUT options"
-	fi
-fi
-echo " "
-
 # Closing..
 unloadModule
-
