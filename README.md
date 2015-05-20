@@ -77,7 +77,7 @@ Additional How to
          -h                Display the usage screen
          -fullscreen       Run the script in FULLSCREEN mode 
          -window           Run the script in WINDOW mode
-	 -coords           Set the screen resolution, by using SET_XY SET_INRES defined inside the script
+         -coords           Set the screen resolution, by using SET_XY SET_INRES defined inside the script
          -save             Save the video to the file FILE_VIDEO instead of streaming it
          -quiet            Disables most of the outputs (The Twitch KEY will be hided)
 
