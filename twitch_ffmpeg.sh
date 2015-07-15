@@ -74,8 +74,25 @@ else
         ECHO_LOG=$ECHO_LOG"\nUsing twitch key located in current running directory"
         STREAM_KEY=$(cat ./twitch_key)
     else
-        echo "Could not locate ~/.twitch_key or twitch_key"
-        exit 1
+        echo ""
+        echo "Could not locate twitch key"
+        echo ""
+        echo "Go to http://www.twitch.tv/dashboard (Login if you have to)"
+        echo "Click 'Stream Key'"
+        echo "Click 'Show Key'"
+        echo "Read the warning and click 'I Understand'"
+        echo -n "Copy it here and press [ENTER]-> : "
+        read var_key
+        echo "$var_key" > ~/.twitch_key
+        echo ""
+        echo "Thank you, if this key is wrong you will have to delete the"
+        echo "twitch key file '~/.twitch_key' and run this script again"
+        echo ""
+        read -p "Press Any Key to continue..."
+        echo ""
+        ECHO_LOG=$ECHO_LOG"\nUsing global twitch key located in home directory"
+        STREAM_KEY=$(cat ~/.twitch_key)
+        echo ""
     fi
 fi
 
