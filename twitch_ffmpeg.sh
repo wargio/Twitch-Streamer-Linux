@@ -173,7 +173,7 @@ streamWebcam(){
                 WEBCAM_XY="$(($(echo $INRES | awk -F"x" '{ print $1 }') - $(echo $WEBCAM_WH | awk -F":" '{ print $1 }') - 10)):10"
                 echo "There isn't a WEBCAM_XY in the options, i'll generate the standard one ($WEBCAM_XY)"
         fi
-        $FFMPEG_PATH -f x11grab -s $INRES -framerate "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -force_key_frames "expr:gte(t,n_forced*$KEY_FRAME)" -g $GOP -keyint_min $GOPMIN -b $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film  -acodec libmp3lame -threads $THREADS -vf "movie=$WEBCAM:f=video4linux2, scale=$WEBCAM_WH , setpts=PTS-STARTPTS [WebCam]; [in] setpts=PTS-STARTPTS [Screen]; [Screen][WebCam] overlay=$WEBCAM_XY [out]" -strict normal -bufsize $CBR $LOGLEVEL_ARG "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
+        $FFMPEG_PATH -f x11grab -s $INRES -framerate "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -filter:v fps="$FPS" -force_key_frames "expr:gte(t,n_forced*$KEY_FRAME)" -g $GOP -keyint_min $GOPMIN -b $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film  -acodec libmp3lame -threads $THREADS -vf "movie=$WEBCAM:f=video4linux2, scale=$WEBCAM_WH , setpts=PTS-STARTPTS [WebCam]; [in] setpts=PTS-STARTPTS [Screen]; [Screen][WebCam] overlay=$WEBCAM_XY [out]" -strict normal -bufsize $CBR $LOGLEVEL_ARG "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
         APP_RETURN=$?
 }
 
@@ -181,7 +181,7 @@ streamNoWebcam(){
         echo "Webcam NOT found!! ("$WEBCAM")"
         echo "You should be online! Check on http://twitch.tv/ (Press CTRL+C to stop)"
         echo " "
-        $FFMPEG_PATH -f x11grab -s $INRES -framerate "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -force_key_frames "expr:gte(t,n_forced*$KEY_FRAME)" -g $GOP -keyint_min $GOPMIN  -b:v $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film -acodec libmp3lame -threads $THREADS -strict normal -bufsize $CBR $LOGLEVEL_ARG "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
+        $FFMPEG_PATH -f x11grab -s $INRES -framerate "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -filter:v fps="$FPS" -force_key_frames "expr:gte(t,n_forced*$KEY_FRAME)" -g $GOP -keyint_min $GOPMIN  -b:v $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film -acodec libmp3lame -threads $THREADS -strict normal -bufsize $CBR $LOGLEVEL_ARG "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
         APP_RETURN=$?
 }
 
@@ -203,7 +203,7 @@ saveStreamNoWebcam(){
         echo "Webcam NOT found!! ("$WEBCAM")"
         echo "You should be online! Check on http://twitch.tv/ (Press CTRL+C to stop)"
         echo " "
-        $FFMPEG_PATH -f x11grab -s $INRES -framerate "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -force_key_frames "expr:gte(t,n_forced*$KEY_FRAME)" -g $GOP -keyint_min $GOPMIN  -b:v $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film -acodec libmp3lame -threads $THREADS -strict normal -bufsize $CBR $LOGLEVEL_ARG $FILE_VIDEO
+        $FFMPEG_PATH -f x11grab -s $INRES -framerate "$FPS" -i :0.0+$TOPXY -f alsa -i pulse -f flv -ac 2 -ar $AUDIO_RATE -vcodec libx264 -filter:v fps="$FPS" -force_key_frames "expr:gte(t,n_forced*$KEY_FRAME)" -g $GOP -keyint_min $GOPMIN  -b:v $CBR -minrate $CBR -maxrate $CBR -pix_fmt yuv420p -s $OUTRES -preset $QUALITY -tune film -acodec libmp3lame -threads $THREADS -strict normal -bufsize $CBR $LOGLEVEL_ARG $FILE_VIDEO
         APP_RETURN=$?
 }
 
@@ -229,8 +229,8 @@ doDefaults(){
 loadModule(){
 	MODULE_LOAD1=$(pactl load-module module-null-sink sink_name=GameAudio sink_properties=device.description="GameAudio") # For Game Audio
 	MODULE_LOAD2=$(pactl load-module module-null-sink sink_name=MicAudio sink_properties=device.description="MicAudio") # For Mic Audio
-	pactl load-module module-device-manager >> /dev/null  
-	pactl load-module module-loopback sink=GameAudio >> /dev/null      
+	pactl load-module module-device-manager >> /dev/null
+	pactl load-module module-loopback sink=GameAudio >> /dev/null
 	pactl load-module module-loopback sink=MicAudio >> /dev/null
 }
 
