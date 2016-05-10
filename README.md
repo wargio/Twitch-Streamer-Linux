@@ -33,7 +33,7 @@ How to
 * To save the Streaming, go to http://twitch.tv/settings/videos and check **Archive Broadcasts - Automatically archive my broadcasts**
 * Open now the twitch.sh and edit the settings
 
-        Value              Example                  Description                       
+        Value              Example                  Description
         ------------------ ------------------------ ---------------------------------------------------------------------------------------------------------
         OUTRES             "1280x720"               Twitch Output Resolution ("1920x1080" should be the maximum resolution)
         FPS                "24"                     Frame per Seconds (Suggested 24, 25, 30 or 60)
@@ -45,7 +45,7 @@ How to
         SERVER             "live" or "live-fra"     Twitch Server list at http://bashtech.net/twitch/ingest.php
         CBR                "1000k" to "3000k"       Constant bitrate. Increase this to get a better pixel quality (Twitch suggest between 1000k to 3000k)
         ALWAYS_FULLSCREEN  "false" or "true"        Change this to 'true' if you want to go always on FULLSCREEN, this will disable the output.
-        SUPPRESS_OUTPUT    "false" or "true"        Change this to 'true' if you want to hide your STREAM_KEY, for security purpose. This will not affect 
+        SUPPRESS_OUTPUT    "false" or "true"        Change this to 'true' if you want to hide your STREAM_KEY, for security purpose. This will not affect
                                                     the ALWAYS_FULLSCREEN option. ALWAYS_FULLSCREEN will always disable the output.
         FILE_VIDEO         "My_stream.flv"          File name to redirect the stream if there's the -save arg (go to the How To to see how it works)
         SET_XY             "10,100"                 Position of the Window on the screen (X,Y) and will be used only if the -coords option is called.
@@ -56,7 +56,7 @@ How to
 * Open the game that you want to stream and set window mode.
 * Open a terminal, browse to the twitch script directory and run the script
 
-        $ ./twitch_ffmpeg.sh 
+        $ ./twitch_ffmpeg.sh
 
 * Avconv script is deprecated. It can give you errors
 * Click with your Mouse on the game window
@@ -72,10 +72,10 @@ Additional How to
 
 * You can run the scripts with some arguments (you can use a combination of these):
 
-        Value              Description                       
+        Value              Description
         ------------------ -------------------------------------------------------------------------------
          -h                Display the usage screen
-         -fullscreen       Run the script in FULLSCREEN mode 
+         -fullscreen       Run the script in FULLSCREEN mode
          -window           Run the script in WINDOW mode
          -coords           Set the screen resolution, by using SET_XY SET_INRES defined inside the script
          -save             Save the video to the file FILE_VIDEO instead of streaming it
@@ -108,6 +108,8 @@ Build it with the following build options:
 
 	./configure --disable-ffplay --disable-ffprobe --disable-ffserver --enable-libfaac --enable-libmp3lame --enable-libv4l2 --enable-libx264 --enable-x11grab --enable-libpulse --enable-librtmp --enable-gpl --enable-nonfree --disable-yasm  --extra-libs="-lasound" && make
 
+Complete Guide on how to compile ffmpeg: https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu
+
 ###Suggested:
 
         pavucontrol
@@ -116,10 +118,10 @@ FAQ
 ---
 * How do i choose the bitrate?
 
-	The optimal bitrate can be calculated in this way: `bitrate = Width*Height/144`, 
+	The optimal bitrate can be calculated in this way: `bitrate = Width*Height/144`,
 	an example `720*480/144 = 2400 (k)` but if you get a bitrate above 5000(k)
 	like `1920*1080/144=2073456(k = ~2073 M)` choose 5000k, because 6000k is
-	DVD quality. 
+	DVD quality.
 
 * I see some errors after `Stopping Audio (Don't worry if you see errors here)`, should i worry about this?
 
@@ -146,5 +148,3 @@ Screenshot:
 -----------
 
 ![Screenshot from twitch.tv](https://raw.github.com/wargio/Twitch-Streamer-Linux/master/Screenshots/Screenshot.png)
-
-
