@@ -20,7 +20,7 @@ Authors:
 
 * Giovanni Dante Grazioli
 
-###Contributors
+### Contributors
 
 * İlteriş Eroğlu (linuxgemini)
 * yofreke
