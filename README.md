@@ -108,7 +108,7 @@ Build it with the following build options:
 
 	./configure --disable-ffplay --disable-ffprobe --disable-ffserver --enable-libfaac --enable-libmp3lame --enable-libv4l2 --enable-libx264 --enable-x11grab --enable-libpulse --enable-librtmp --enable-gpl --enable-nonfree --disable-yasm  --extra-libs="-lasound" && make
 
-###Suggested:
+### Suggested:
 
         pavucontrol
 
